@@ -1,0 +1,5 @@
+(Tool)=False, (Fish)=True, (Name)=fish
+(Tool)=False, (Fish)=True, (Name)=salmon
+(Tool)=False, (Fish)=True, (Name)=carp
+
+
