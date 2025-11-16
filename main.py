@@ -522,8 +522,8 @@ class PlayerSprite(pygame.sprite.Sprite):
 class StatTracker:
     def __init__(self, linked_player):
         self.player = linked_player
-        self.fish_caught = inventory.Item.ret_fish()
-        self.fish_sold = inventory.Item.ret_fish()
+        self.fish_caught = inventory.Item.ret_items('is_fish')
+        self.fish_sold = inventory.Item.ret_items('is_fish')
 
     def catch_fish(self, fish_name):
         self.fish_caught[fish_name] += 1
