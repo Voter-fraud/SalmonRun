@@ -821,7 +821,6 @@ def handle_rod():
     global game_state
     if player.hook_cords and hooked_fsh:
         if Fish.fish_took == hooked_fsh: # if fish is catchable when you pull the rod
-            minigame.reset()
             game_state = 'minigame'
 
 init_main()
@@ -888,7 +887,6 @@ while True:
                 if event.key == pygame.K_SPACE:
                     handle_rod()
                 if event.key == pygame.K_F11:
-                    minigame.reset()
                     game_state = 'minigame'
             inv = inventory.inventory
             if event.type == pygame.MOUSEBUTTONDOWN:
