@@ -94,11 +94,12 @@ class Inventory:
         self.inventory_slot = load_asset('inventory_slot.png', 'items')
         self.inv = [
             [Item.new('fish'), '', ''],
-            ['', '', ''],
+            [Item.new('salmon'), '', ''],
             ['', '', ''],
         ]
         self.highlight = load_asset('inv_select.png', 'items')
         self.grabbed = '' # What you are currently holding
+        self.bait_slot = ''
         self.active = reso_p.win_height-110*UI_scale, 110*UI_scale # area in which inventory collisions are checked
         self.slot_size = 32 * UI_scale
         self.gap = 2
@@ -117,6 +118,16 @@ class Inventory:
                     slot.draw((x, y))
                 x += self.slot_size+self.gap
             y += self.slot_size+self.gap
+        #bait slot
+        x = self.gap*5+self.slot_size*3  # equivalent to 3 spaces right and a extra gap
+        y -= self.slot_size+self.gap+12
+        box = pygame.Rect(x, y, self.slot_size, self.slot_size)
+        win.blit(inventory.inventory_slot, (x, y))
+        if box.collidepoint(pos):
+            win.blit(self.highlight, (x, y))
+        if isinstance(self.bait_slot, Item):
+            self.bait_slot.draw((x, y))
+
         if isinstance(self.grabbed, Item):
             self.grabbed.draw((pos[0]-(self.slot_size/2), pos[1]-(self.slot_size/2)))
 
@@ -155,12 +166,21 @@ class Inventory:
                 x = self.gap  # x cords
                 for slot_i, slot in enumerate(row):
                     box = pygame.Rect(x, y, self.slot_size, self.slot_size)
-                    if box.collidepoint(pos) and isinstance(self.grabbed, Item):
+                    if box.collidepoint(pos) and isinstance(self.grabbed, Item) and not self.inv[row_i][slot_i]:
                         self.inv[row_i][slot_i] = self.grabbed.copy_new()
                         self.grabbed = ''
                         return slot
                     x += self.slot_size+self.gap
                 y += self.slot_size+self.gap
+
+            x = self.gap * 5 + self.slot_size * 3  # equivalent to 3 spaces right and a extra gap
+            y -= self.slot_size + self.gap + 12
+            box = pygame.Rect(x, y, self.slot_size, self.slot_size)
+            if box.collidepoint(pos) and isinstance(self.grabbed, Item) and not self.bait_slot:
+                self.bait_slot = self.grabbed.copy_new()
+                self.grabbed = ''
+                return "baitslot"
+
             self.add_item(self.grabbed)
             self.grabbed = ''
 
@@ -172,5 +192,8 @@ class Inventory:
                     self.inv[row_i][slot_i] = item.copy_new()
                     self.grabbed = ''
                     return ''
+
+    def use_bait(self):
+        self.bait_slot = ''
 
 inventory = Inventory()

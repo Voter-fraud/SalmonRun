@@ -99,6 +99,7 @@ class Fish(pygame.sprite.Sprite):
                         x = random.randrange(-300, 10)
                         if x > 0:
                             cls.fish_took = fish
+                            inventory.inventory.use_bait() # the fish ate the bait
                     elif fish == cls.fish_caught and cls.fish_took:
                         # handles deciding when a fish which grabbed onto the hook will run away
                         y = random.randrange(-490, 15)
