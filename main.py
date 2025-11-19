@@ -203,21 +203,15 @@ class Fish(pygame.sprite.Sprite):
             self.ignore -= 1
         elif player.hook_cords:
             dif = abs(player.hook_cords[0] - self.cords[0]) + abs(player.hook_cords[1] - self.cords[1])
-            if dif > player.baitlevel * 3 + 64*map_mod.scale:
-                return False
-            ret = fun_box_check(self.cords, self.vector, True, True, 16*map_mod.scale, 16*map_mod.scale, player.baitlevel/3, player.baitlevel/3)
-            if ret:
-                self.vector = ret
-                return True
-            ret = fun_box_check(self.cords, self.vector, True, False, 16*map_mod.scale, 16*map_mod.scale, player.baitlevel/3, player.baitlevel/3)
-            if ret:
-                self.vector = ret
-                return True
-            ret = fun_box_check(self.cords, self.vector, False, False, 16*map_mod.scale, 16*map_mod.scale, player.baitlevel, player.baitlevel)
-            if ret:
-                self.vector = ret
-                return True
-        return False
+            # if dif > player.baitlevel * 3 + 64*map_mod.scale:
+                # return False
+            for vector in ([0, -1], [0, 1], [1, 0], [-1, 0]):
+                if vector != (self.vector[0]*-1, self.vector[1]*-1):
+                    ret = fun_box_check((self.cords[0] + 16, self.cords[1] + 16), vector, 1000 * map_mod.scale, player.hook_cords)
+                    if ret:
+                        print(ret)
+                        self.vector = ret
+                        return True
 
     @classmethod
     def scared_check(cls):
@@ -236,27 +230,27 @@ class Fish(pygame.sprite.Sprite):
 
 
 
-def fun_box_check(topleft, orig_vector, check_inverse, check_reflection, width, length, check_length, check_width):
+def fun_box_check(center, vectora, rang, check):
     """Returns the vector needed to move towards a nearby point"""
-    prime_vector = orig_vector.copy()
-    if check_inverse:
-        prime_vector.reverse()
-    if check_reflection:
-        prime_vector[0] *= -1
-        prime_vector[1] *= -1
-    box_width, box_length = width + abs(prime_vector[0] * check_length), length + abs(prime_vector[1] * check_width)
-    box2 = pygame.Rect(0, 0, box_width, box_length)
-    if 1 in prime_vector:
-        box2.topleft = topleft[0] + prime_vector[0] * width, topleft[1] + prime_vector[1] * length
-    elif -1 in prime_vector and not check_inverse and not check_reflection:
-        box2.topleft = (topleft[0] + prime_vector[0] * width + prime_vector[0] * player.baitlevel, topleft[1] +
-                        prime_vector[1] * length + prime_vector[1] * player.baitlevel)
-    elif -1 in prime_vector:
-        box2.topleft = topleft[0] + prime_vector[0] * width + prime_vector[0] * player.baitlevel/3, topleft[1] + \
-                       prime_vector[1] * length + prime_vector[1] * player.baitlevel/3
-    if box2.collidepoint(player.hook_cords[0], player.hook_cords[1]):
-        return prime_vector
-    return False
+    half = 16
+    for index, value in enumerate(center):
+        vector = vectora[index]
+        if vector:
+            first = [value+half*vector, value+half]
+            second  = [value + half * vector, value-half]
+            third = [value+(half+rang)*vector, value+half]
+            fourth = [value+(half+rang)*vector, value-half]
+            if index == 1:
+                first.reverse()
+                second.reverse()
+                third.reverse()
+                fourth.reverse()
+            box = toolbox.box_from_4_cords(first, second, third, fourth)
+            pygame.draw.rect(win, (0, 0, 0), box.width, box.height, box.topleft)
+            if box.collidepoint(check):
+                print(vectora)
+                return vectora
+
 
 class FishSpawner:
     FishSpawners = []

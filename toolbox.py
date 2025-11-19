@@ -38,4 +38,15 @@ def draw_line(start, end, color, surf, xp, yp, size):
 
 def sum_of_two_numbers(num1, num2):
     return num1+num2
+
+def box_from_4_cords(cord1, cord2, cord3, cord4):
+    if isinstance(cord1, int):
+        return False
+    x_list = [cord1[0], cord2[0], cord3[0], cord4[0]]
+    y_list = [cord1[1], cord2[1], cord3[1], cord4[1]]
+    width = max(x_list)-min(x_list)
+    height = max(y_list)-min(y_list)
+    topleft = min((cord1, cord2, cord3, cord4))
+    box = pygame.rect.Rect(topleft[0], topleft[1], width, height)
+    return box
 sum = sum_of_two_numbers(1, 5)
