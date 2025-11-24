@@ -206,10 +206,9 @@ class Fish(pygame.sprite.Sprite):
             # if dif > player.baitlevel * 3 + 64*map_mod.scale:
                 # return False
             for vector in ([0, -1], [0, 1], [1, 0], [-1, 0]):
-                if vector != (self.vector[0]*-1, self.vector[1]*-1):
-                    ret = fun_box_check((self.cords[0] + 16, self.cords[1] + 16), vector, 1000 * map_mod.scale, player.hook_cords)
+                if vector != [self.vector[0]*-1, self.vector[1]*-1]: # does not check back of fish
+                    ret = fun_box_check((self.cords[0], self.cords[1]), self.side_length, vector, 32 * map_mod.scale, player.hook_cords)
                     if ret:
-                        print(ret)
                         self.vector = ret
                         return True
 
@@ -230,26 +229,37 @@ class Fish(pygame.sprite.Sprite):
 
 
 
-def fun_box_check(center, vectora, rang, check):
+def fun_box_check(topleft, side_lengths, vectora, rang, check):
     """Returns the vector needed to move towards a nearby point"""
-    half = 16
-    for index, value in enumerate(center):
-        vector = vectora[index]
-        if vector:
-            first = [value+half*vector, value+half]
-            second  = [value + half * vector, value-half]
-            third = [value+(half+rang)*vector, value+half]
-            fourth = [value+(half+rang)*vector, value-half]
-            if index == 1:
-                first.reverse()
-                second.reverse()
-                third.reverse()
-                fourth.reverse()
-            box = toolbox.box_from_4_cords(first, second, third, fourth)
-            pygame.draw.rect(win, (0, 0, 0), box.width, box.height, box.topleft)
-            if box.collidepoint(check):
-                print(vectora)
-                return vectora
+    s_l = side_lengths
+    topleft_changer = {
+        (0, 1): [[0, 1], [1, 1]], # down
+        (0, -1): [[0, 0], [1, 0]], # up
+        (-1, 0): [[0, 0], [0, 1]], # left
+        (1, 0): [[1, 1], [1, 0]], # right
+    }
+    for index, value in enumerate(vectora):
+        if value:
+            significant_index = index
+
+    inner_bounds = topleft_changer[tuple(vectora)]
+    outer_bounds = inner_bounds.copy()
+
+    for index, pair in enumerate(inner_bounds):
+        inner_bounds[index] = [topleft[ind2]+value*s_l for ind2, value in enumerate(pair)]
+
+    for index, pair in enumerate(outer_bounds):
+        outer_bounds[index] = [topleft[ind2]+value*s_l for ind2, value in enumerate(pair)]
+        outer_bounds[index][significant_index]+=vectora[significant_index]*rang
+
+    first, second = inner_bounds
+    third, fourth = outer_bounds
+
+    box = toolbox.box_from_4_cords(first, second, third, fourth)
+    pygame.draw.rect(win, (0, 0, 0), (box.topleft[0]-xp, box.topleft[1]-yp, box.width, box.height), 0)
+    if box.collidepoint(check):
+            return vectora
+    return None
 
 
 class FishSpawner:
@@ -828,6 +838,7 @@ while True:
     pos = pygame.mouse.get_pos()
     ps = player.xp_yp
     yp, xp =  ps[0], ps[1]
+    drawmap()
     clock.tick(60)
     # timer
     timer += 1
@@ -849,7 +860,6 @@ while True:
     player.update()
     for decorr in Decor.HighDecor.decor_sprites.sprites():
         decorr.update()
-    drawmap()
     player.walking = False
     Fish.fish_moving()
     #keyholds

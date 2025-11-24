@@ -20,7 +20,6 @@ class GravitationalObject:
         self.range = abs_range
 
     def dir_angle(self, objt):
-        print(F'{objt.angle}, current')
         dx = self.cords[0] - objt.cords[0]
         dy = self.cords[1] - objt.cords[1]
         ret = math.atan2(dy, dx)
@@ -29,7 +28,6 @@ class GravitationalObject:
             ret += (270+bouncer)
         if objt.angle-ret < -180:
             ret -= (270+bouncer)
-        print(F'{ret}goal')
         return (ret-dirsub)*dirmult
 
     def pull_entity(self, obj):
