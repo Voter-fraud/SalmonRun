@@ -150,8 +150,6 @@ def never(block, g_map):
         safe_return(v + 1, h - 1, block), safe_return(v+1, h, block), safe_return(v + 1, h + 1, block)
     ]
 
-    print(gonna)
-
     give = gonna[1], gonna[4], gonna[6], gonna[3]
 
     you = gonna[0], gonna[2], gonna[7], gonna[5]

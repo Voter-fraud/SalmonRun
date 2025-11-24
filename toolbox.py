@@ -8,7 +8,7 @@ def cut_string(string, count):
     return ret_string
 
 def return_corners(cords, width, length): # cords must be inputted for easier checking of movement
-    """Returns the cords of all 4 corners of a sprite in a tuple"""
+    """Returns the cords of all 4 corners of a sprite in a tuple from the topleft"""
     rect = pygame.Rect(cords[0], cords[1], width, length)
     return rect.center, rect.topleft, rect.topright, rect.bottomleft, rect.bottomright, rect.midleft, rect.midright, rect.midtop, rect.midbottom
 
@@ -49,4 +49,5 @@ def box_from_4_cords(cord1, cord2, cord3, cord4):
     topleft = min((cord1, cord2, cord3, cord4))
     box = pygame.rect.Rect(topleft[0], topleft[1], width, height)
     return box
-sum = sum_of_two_numbers(1, 5)
+
+
