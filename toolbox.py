@@ -40,6 +40,7 @@ def sum_of_two_numbers(num1, num2):
     return num1+num2
 
 def box_from_4_cords(cord1, cord2, cord3, cord4):
+    """Returns a pygame box from any 4 given cords"""
     if isinstance(cord1, int):
         return False
     x_list = [cord1[0], cord2[0], cord3[0], cord4[0]]
