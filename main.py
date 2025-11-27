@@ -26,9 +26,10 @@ def init_main():
 class Fish(pygame.sprite.Sprite):
     fish_types = {
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname)
-        'salmon': (2, 1, 0.4, 1, 5, 'salmon'),
-        'fish': (3, 3, 0.6, 1, 5, 'fish'),
-        'carp': (3, 2, 1, 1, 5, 'carp'),
+        'salmon': (2, 1, 0.4, 1, 5, 'salmon', False), # slightly re work undecisiveness
+        'maternal_salmon': (2, 2, 0.4, 1, 5, 'salmon', True),
+        'fish': (3, 3, 0.6, 1, 5, 'fish', False),
+        'carp': (3, 2, 1, 1, 5, 'carp', False),
     }
 
     fish_lists = {} # the only comprehensive list of fish.
@@ -62,9 +63,10 @@ class Fish(pygame.sprite.Sprite):
                     fish.rect.width = 16 * map_mod.scale
 
     @classmethod
-    def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item):
+    def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound):
         """creates a new fish instance in the fish_list sprite group"""
-        new = Fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item)
+        new = Fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound)
+        new.origin = cords #original fish position
         cls.fish_lists[item].add(new)
         spritelist.add(new)
         return new
@@ -112,7 +114,7 @@ class Fish(pygame.sprite.Sprite):
                 if fish != cls.fish_caught:
                     fish.fish_move()
 
-    def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item):
+    def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound):
         super().__init__()
         self.image = load_asset('fishleft1.png','fish scheiße') # change later to relate to a dict that matches fish type to image
         self.rect = self.image.get_rect() # creates rect for sprite class
@@ -129,6 +131,8 @@ class Fish(pygame.sprite.Sprite):
         self.cautiousness = cautiousness
         self.item = inventory.Item.new(item)
         self.side_length = 16
+        self.origin_bound = origin_bound
+        self.origin = (0, 0)
 
     def __str__(self):
         return self.cords
@@ -178,11 +182,18 @@ class Fish(pygame.sprite.Sprite):
         ranlist = (-1, 1)
         escape = 1
         while True:
-            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale)), 16*map_mod.scale, 16*map_mod.scale)[-1]: # plus 20 is to keep the fish off of the sand
+            if self.origin_bound:
+                home_range = 50*map_mod.scale
+            else:
+                home_range = 9999999 * map_mod.scale
+            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale)),
+                16*map_mod.scale, 16*map_mod.scale)[-1] and \
+                home_range >= abs(self.origin[0]-(x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale)))+abs(self.origin[1]-(y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale))):
+                # plus 20 is to keep the fish off of the sand
                 self.cords = x + self.vector[0]*self.speed, y + self.vector[1]*self.speed
                 return
             else:
-                if 0 in self.vector: # potentially keepable with a little variation for gravity
+                if 0 in self.vector:
                     new_vector.reverse()
                     if new_vector[0] == 0:
                         new_vector[1] = ranlist[random.randrange(-1, 1)]
@@ -308,9 +319,9 @@ class FishSpawner:
             r = random.randrange(0, self.tot)
             for key, value in self.spwn_list.items():
                 if value[0] < r <= value[1]:
-                    swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname = Fish.fish_types[key]
+                    swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound = Fish.fish_types[key]
 
-                    new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname)
+                    new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound)
                     self.cur.add(new)
 
 FishSpawner.new([1500, 1191], {
@@ -327,6 +338,7 @@ FishSpawner.new([1350, 775], {
     'fish': 0,
     'carp': 0,
     'salmon': 4,
+    'maternal_salmon': 4,
 }, 6, 75 )
 Fish.rescale()
 Fish.update_fish()
