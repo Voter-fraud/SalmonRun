@@ -1,3 +1,9 @@
+"""
+This module creates and then is able to manage game resolution.
+Under no circumstances should ANY project specific modules be imported.
+"""
+
+
 import pygame
 pygame.init()
 def format_resolution(txt):
@@ -11,25 +17,17 @@ def format_resolution(txt):
     for spot, item in enumerate(x):
         x[spot] = item.strip()
     return x
+
 res = format_resolution('Reso.txt')
-win_lengthw = int(res[0]) # fix rendering based on these 640x320 reccomended base size
+win_lengthw = int(res[0]) # windowed
 win_heightw = int(res[1])
-win_lengthf = int(res[0]) # fix rendering based on these 640x320 reccomended base size
-win_heightf = int(res[1])
+
 win_length = win_lengthw
 win_height = win_heightw
-win_mode = 'windowed'
+win_mode = 'windowed' # currently no fullscreen because it is not super important
 win = pygame.display.set_mode((win_length, win_height))
 
-def fullscreen_toggle():
-    global win_lengthw, win_heightw,  win_lengthf, win_heightf, win_height, win_length, win, win_mode
-    if win_mode == 'windowed':
-        win = pygame.display.set_mode((win_lengthf, win_heightf), pygame.FULLSCREEN)
-        win_mode = 'fullscreen'
-        win_length = win_lengthf
-        win_height = win_heightf
-    elif win_mode == 'fullscreen':
-        win = pygame.display.set_mode((win_lengthw, win_heightw))
-        win_mode = 'windowed'
-        win_length = win_lengthw
-        win_height = win_heightw
+if win_heightw == 600: # sets entire game scale
+    scale = 2
+else:
+    scale = 3

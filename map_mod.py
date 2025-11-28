@@ -1,10 +1,9 @@
+"""map_mod"""
+
 import math, os, pygame, random, logging
-from reso_p import win, win_heightw
+from reso_p import win, scale
 from toolbox import load_asset
-if win_heightw == 600:
-    scale = 2
-else:
-    scale = 3
+
 tile_size = 32*scale
 
 grass_tile = [load_asset('center_grass.png', 'tileset'), load_asset('center_grass2.png', 'tileset')
@@ -17,6 +16,7 @@ map_dict = {
 }
 
 class Block(pygame.sprite.Sprite):
+    """Only directly accessed by this map_mod.py and the map editor."""
 
     block_list = pygame.sprite.Group()
     tile_map = ''

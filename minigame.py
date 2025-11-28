@@ -1,6 +1,5 @@
 import pygame, random
-from reso_p import win
-from map_mod import scale
+from reso_p import win, scale
 from config import UI_scale
 from toolbox import load_asset
 clock = pygame.time.Clock()

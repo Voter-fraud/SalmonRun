@@ -344,8 +344,6 @@ while True:
                     cam.text_cur = False
             if event.key == pygame.K_q:
                 cam.sprint_toggle()
-            if event.key == pygame.K_F11:
-                reso_p.fullscreen_toggle() # toggles on or off full screen mode
             if event.key == pygame.K_F5:
                 for sprite in map_mod.Block.block_list.sprites():
                     if sprite.type == 'water':

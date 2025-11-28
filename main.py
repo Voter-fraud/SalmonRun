@@ -2,8 +2,9 @@
 import copy, fishing_quests, reso_p, logging, real_menu_handler
 
 import Decor, minigame
+import map_mod
 import toolbox
-from config import math, random, map_mod, os, pygame, game_map, UI_scale, spritelist
+from config import math, random, os, pygame, game_map, UI_scale, spritelist
 from map_mod import win
 from toolbox import return_corners, load_asset
 from textM import text_box, textbox_font
@@ -11,6 +12,7 @@ import inventory
 from fish import Fish, FishSpawner
 from NPCs import old_man
 import NPCs
+from reso_p import scale
 pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
 
@@ -60,31 +62,32 @@ class PlayerSprite(pygame.sprite.Sprite):
 
     @classmethod
     def rescale_player(cls):
+        player_size = (16 * scale, 32 * scale)
         for key, value in cls.walking_anim.items():
-            cls.walking_anim[key] = (pygame.transform.scale(value[0], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                     pygame.transform.scale(value[1], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                     pygame.transform.scale(value[2],(16 * map_mod.scale, 32 * map_mod.scale)),
-                                     pygame.transform.scale(value[3], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                     pygame.transform.scale(value[4], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                     pygame.transform.scale(value[5], (16 * map_mod.scale, 32 * map_mod.scale)))
+            cls.walking_anim[key] = (pygame.transform.scale(value[0], player_size),
+                                     pygame.transform.scale(value[1], player_size),
+                                     pygame.transform.scale(value[2], player_size),
+                                     pygame.transform.scale(value[3], player_size),
+                                     pygame.transform.scale(value[4], player_size),
+                                     pygame.transform.scale(value[5], player_size))
         for key, value in cls.fishing_anim.items():
             if key == 'left' or key == 'right':
-                cls.fishing_anim[key] = (pygame.transform.scale(value[0], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                         pygame.transform.scale(value[1], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                         pygame.transform.scale(value[2], (20 * map_mod.scale, 32 * map_mod.scale)))
+                cls.fishing_anim[key] = (pygame.transform.scale(value[0], player_size),
+                                         pygame.transform.scale(value[1], player_size),
+                                         pygame.transform.scale(value[2], (20 * scale, 32 * scale))) # why is this one different?
             else:
-                cls.fishing_anim[key] = (pygame.transform.scale(value[0], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                         pygame.transform.scale(value[1], (16 * map_mod.scale, 32 * map_mod.scale)),
-                                         pygame.transform.scale(value[2], (16 * map_mod.scale, 32 * map_mod.scale)))
+                cls.fishing_anim[key] = (pygame.transform.scale(value[0], player_size),
+                                         pygame.transform.scale(value[1], player_size),
+                                         pygame.transform.scale(value[2], player_size))
         for key, value in cls.still.items():
-            cls.still[key] = pygame.transform.scale(value, (16 * map_mod.scale, 32 * map_mod.scale))
+            cls.still[key] = pygame.transform.scale(value, player_size)
         for key, value in cls.fish_passive.items():
-            cls.fish_passive[key] = pygame.transform.scale(value, (16 * map_mod.scale, 32 * map_mod.scale))
+            cls.fish_passive[key] = pygame.transform.scale(value, player_size)
 
     def __init__(self):
         super().__init__()
         self.bauble = load_asset('bauble.png','player')
-        self.cords = [1800*map_mod.scale, 1200*map_mod.scale] # top left
+        self.cords = [1800 * scale, 1200 * scale] # top left
         self.text_cur = False
         self.facing = 'up'
         self.hook_cords = [] # if empty hook is not cast
@@ -93,8 +96,8 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.can_move = True
         self.fish_hold = False
         self.baitlevel = 20
-        self.width = 16*map_mod.scale
-        self.height = 32*map_mod.scale
+        self.width = 16 * scale
+        self.height = 32 * scale
         self.rect = PlayerSprite.still['up'].get_rect(topleft=self.cords)
         self.walking = False
         self.walking_frame = 0
@@ -116,31 +119,31 @@ class PlayerSprite(pygame.sprite.Sprite):
         elif self.hook_cords:
             if self.facing == 'down':
                 win.blit(PlayerSprite.fish_passive[self.facing], self.v_center)
-                toolbox.draw_line(self.rect.topleft, (self.hook_cords[0] + 1.3*map_mod.scale, self.hook_cords[1]), (255, 255, 255), win,
+                toolbox.draw_line(self.rect.topleft, (self.hook_cords[0] + 1.3 * scale, self.hook_cords[1]), (255, 255, 255), win,
                                   xp, yp, 1)
-                toolbox.draw_line(self.rect.topleft, (self.rect.center[0], self.rect.center[1]+4*map_mod.scale), (139,69,19), win, xp, yp, 3)
+                toolbox.draw_line(self.rect.topleft, (self.rect.center[0], self.rect.center[1] + 4 * scale), (139, 69, 19), win, xp, yp, 3)
             elif self.facing == 'up':
-                connector = [self.rect.topright[0]-3*map_mod.scale, self.rect.topright[1]-3*map_mod.scale]
-                toolbox.draw_line(connector, (self.hook_cords[0] + 1.3*map_mod.scale, self.hook_cords[1]), (255, 255, 255), win,
+                connector = [self.rect.topright[0] - 3 * scale, self.rect.topright[1] - 3 * scale]
+                toolbox.draw_line(connector, (self.hook_cords[0] + 1.3 * scale, self.hook_cords[1]), (255, 255, 255), win,
                                   xp, yp, 1)
-                toolbox.draw_line(connector, (self.rect.center[0], self.rect.center[1]+4*map_mod.scale), (139,69,19), win, xp, yp, 3)
+                toolbox.draw_line(connector, (self.rect.center[0], self.rect.center[1] + 4 * scale), (139, 69, 19), win, xp, yp, 3)
                 win.blit(PlayerSprite.fish_passive[self.facing], self.v_center)
             elif self.facing == 'left':
                 connector = [self.rect.topleft[0] - 20, self.rect.topright[1] + 15]
-                toolbox.draw_line(connector, (self.hook_cords[0] + 1.3*map_mod.scale, self.hook_cords[1]), (255, 255, 255), win,
+                toolbox.draw_line(connector, (self.hook_cords[0] + 1.3 * scale, self.hook_cords[1]), (255, 255, 255), win,
                                   xp, yp, 1)
-                toolbox.draw_line(connector, (self.rect.center[0] - 1 * map_mod.scale, self.rect.center[1]),
+                toolbox.draw_line(connector, (self.rect.center[0] - 1 * scale, self.rect.center[1]),
                                   (139, 69, 19), win, xp, yp, 3)
                 win.blit(PlayerSprite.fish_passive[self.facing], self.v_center)
             elif self.facing == 'right':
                 connector = [self.rect.topright[0]+20, self.rect.topright[1]+15]
-                toolbox.draw_line(connector, (self.hook_cords[0] + 1.3*map_mod.scale, self.hook_cords[1]), (255, 255, 255), win,
+                toolbox.draw_line(connector, (self.hook_cords[0] + 1.3 * scale, self.hook_cords[1]), (255, 255, 255), win,
                                   xp, yp, 1)
-                toolbox.draw_line(connector, (self.rect.center[0]+1*map_mod.scale, self.rect.center[1]), (139,69,19), win, xp, yp, 3)
+                toolbox.draw_line(connector, (self.rect.center[0] + 1 * scale, self.rect.center[1]), (139, 69, 19), win, xp, yp, 3)
                 win.blit(PlayerSprite.fish_passive[self.facing], self.v_center)
         elif self.cast_length:
             if math.floor(self.cast_length/10) >= 2 and self.facing == 'right':
-                win.blit(PlayerSprite.fishing_anim[self.facing][2], (self.v_center[0]-4*map_mod.scale, self.v_center[1]))
+                win.blit(PlayerSprite.fishing_anim[self.facing][2], (self.v_center[0] - 4 * scale, self.v_center[1]))
             elif math.floor(self.cast_length / 10) < 3:
                 win.blit(PlayerSprite.fishing_anim[self.facing][math.floor(self.cast_length / 10)], self.v_center)
             else:
@@ -177,13 +180,13 @@ class PlayerSprite(pygame.sprite.Sprite):
         new_box = copy.copy(self.rect)
         new_box.topleft = self.check_obst(self.cast_length)
         if self.facing == 'up':
-            check = new_box.midtop[0], new_box.midtop[1]-10*map_mod.scale
+            check = new_box.midtop[0], new_box.midtop[1] - 10 * scale
         elif self.facing == 'down':
-            check = new_box.midbottom[0], new_box.midbottom[1]+10*map_mod.scale
+            check = new_box.midbottom[0], new_box.midbottom[1] + 10 * scale
         elif self.facing == 'left':
-            check = new_box.midleft[0]-10*map_mod.scale, new_box.midleft[1]
+            check = new_box.midleft[0] - 10 * scale, new_box.midleft[1]
         elif self.facing == 'right':
-            check = new_box.midright[0]+10*map_mod.scale, new_box.midright[1]
+            check = new_box.midright[0] + 10 * scale, new_box.midright[1]
         else:
             logging.warning('player does not have a direction')
             return 'player has no position'
