@@ -4,3 +4,4 @@ pygame.mixer.init()
 pygame.font.init()
 game_map = map_mod.format_game_map('custom')
 UI_scale = 1
+spritelist = pygame.sprite.Group()
