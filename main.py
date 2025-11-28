@@ -312,7 +312,7 @@ def rescale_game():
 
 def generate_surface():
     pss = player.xp_yp
-    return map_mod.create_surface(game_map, pss[0], pss[1])
+    return map_mod.tile_convert(game_map)
 
 def draw_notifications():
     if cur_quest.mode == 'start':

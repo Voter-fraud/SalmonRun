@@ -34,7 +34,7 @@ def save_game_info(length):
 
 
 def return_corners(cords, width, length): # cords must be inputted for easier checking of movement
-    """Returns the cords of all 4 corners of a sprite in a tuple"""
+    """Returns the cords of all 4 corners of a sprite in a tuple this is map editor exclusive"""
     rect = pygame.Rect(cords[0], cords[1], width, length)
     return rect.center, rect.topleft, rect.topright, rect.bottomleft, rect.bottomright, rect.midleft, rect.midright,
 
