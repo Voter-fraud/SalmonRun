@@ -248,7 +248,7 @@ init_main()
 tile_map = generate_surface()
 game_state = 'main'
 Fish.rescale()
-Fish.update_fish(player.hook_cords)
+Fish.update_fish(player, timer, inventory, game_state, grid_ahead)
 while True:
     walking_sound.set_volume(real_menu_handler.sound/100)
     rod_pull_sound.set_volume(real_menu_handler.sound/100)
@@ -273,14 +273,13 @@ while True:
         FishSpawner.spawn_all(grid_ahead, inventory, spritelist)
 
     #update fish then map
-    Fish.update_fish(player.hook_cords) # checks to see if a fish is on the hook. updates Fish.fish_caught
+    Fish.update_fish(player, timer, inventory, game_state, grid_ahead) # checks to see if a fish is on the hook. updates Fish.fish_caught
     hooked_fsh = Fish.fish_caught
     Fish.rescale()
     player.update()
     for decorr in Decor.HighDecor.decor_sprites.sprites():
         decorr.update()
     player.walking = False
-    Fish.fish_moving(timer, inventory, player, game_state, grid_ahead)
     #keyholds
     #event handler
     if game_state == 'main':

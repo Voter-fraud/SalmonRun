@@ -68,39 +68,33 @@ class Fish(pygame.sprite.Sprite):
                 Fish.fish_caught = self  # returns a class instance if there is a collision
 
     @classmethod
-    def update_fish(cls, player_hook_cords):
-        """updates each fishes center and returns any hook collisions if applicable"""
+    def update_fish(cls, player, timer, inventory, game_state, grid_ahead):
+        """Handles fish AI on a high level"""
         for species_list in cls.fish_lists.values():
             for fish in species_list:
-                fish.check_hook_collision(player_hook_cords)
+                fish.check_hook_collision(player.hook_cords)
+                fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead)
 
-    def complex_fish_movement(self):
-        ''
-
-    @classmethod
-    def fish_moving(cls, timer, inventory, player, game_state, grid_ahead):
-        """Handles predictable fish movements"""
-        for species_list in cls.fish_lists.values():
-            for fish in species_list:
-                if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
-                    if not fish.baited(player.hook_cords) and timer%60 and fish != cls.fish_caught:
-                        # every second active fishes get a chance to swerve
-                        fish.fish_swerve()
-                    elif fish == cls.fish_caught and not cls.fish_took:
-                        # handles deciding when a circling fish grabs onto the hook
-                        x = random.randrange(-300, 10)
-                        if x > 0:
-                            cls.fish_took = fish
-                            inventory.inventory.use_bait() # the fish ate the bait
-                    elif fish == cls.fish_caught and cls.fish_took:
-                        # handles deciding when a fish which grabbed onto the hook will run away
-                        y = random.randrange(-490, 15)
-                        if y > 0 and game_state != 'minigame':
-                            player.hook_cords = False
-                            cls.fish_took = False
-                            cls.fish_caught = False
-                if fish != cls.fish_caught:
-                    fish.fish_move(grid_ahead)
+    def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead):
+        if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
+            if not self.baited(player.hook_cords) and timer % 60 and self != Fish.fish_caught:
+                # every second active fishes get a chance to swerve
+                self.fish_swerve()
+            elif self == Fish.fish_caught and not Fish.fish_took:
+                # handles deciding when a circling fish grabs onto the hook
+                x = random.randrange(-300, 10)
+                if x > 0:
+                    Fish.fish_took = self
+                    inventory.inventory.use_bait()  # the fish ate the bait
+            elif self == Fish.fish_caught and Fish.fish_took:
+                # handles deciding when a fish which grabbed onto the hook will run away
+                y = random.randrange(-490, 15)
+                if y > 0 and game_state != 'minigame':
+                    player.hook_cords = False
+                    Fish.fish_took = False
+                    Fish.fish_caught = False
+        if self != Fish.fish_caught:
+            self.fish_move(grid_ahead)
 
     def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, inventory):
         super().__init__()
