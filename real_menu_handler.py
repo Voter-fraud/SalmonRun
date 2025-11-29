@@ -17,10 +17,8 @@ pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
 my_font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size
 small_font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size
-money_amount = 100
 soundstate = True
-bet_amount = 10
-game_state = 'main'
+menu_state = 'main'
 sound = 100
 # loading in game assets
 menu_backgrounds = {
@@ -119,8 +117,8 @@ class Menu:
                 win.blit(self.sel_img, self.cords)
 
         def clicked(self):
-            global game_state
-            game_state = self.trans
+            global menu_state
+            menu_state = self.trans
 
     class Slider:
         def __init__(self, img, sel_img, name, cords, txt_cords, txt_def, font, id):
@@ -177,9 +175,9 @@ class Menu:
 
 
     def run_menu(self, framerate):
-        global game_state
+        global menu_state
         internal_timer = 10
-        while game_state == self.name:
+        while menu_state == self.name:
             clock.tick(framerate)
             t_button = self.button_list[self.select]
             for button in self.button_list:
@@ -197,11 +195,11 @@ class Menu:
                         if t_button.type != "slider":
                             t_button.clicked()
                             if t_button.type == 'toggle':
-                                t_button.cur_img = t_button.cur_img % (t_button.length) - 1
+                                t_button.cur_img = t_button.cur_img % t_button.length - 1
                     elif event.key == pygame.K_ESCAPE:
-                        if game_state == 'main':
+                        if menu_state == 'main':
                             return 'quit'
-                        game_state = 'main'
+                        menu_state = 'main'
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
@@ -256,5 +254,5 @@ menu_dict = {
 
 def run_menu():
     while True:
-        if menu_dict[game_state].run_menu(60) == 'quit':
+        if menu_dict[menu_state].run_menu(60) == 'quit':
             return

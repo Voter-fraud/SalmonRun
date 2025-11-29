@@ -1,9 +1,9 @@
 import logging, math
 import config
 import pygame, random
-from toolbox import load_asset
+from toolbox import load_asset, fun_box_check
 from reso_p import win
-import map_mod, toolbox
+import map_mod
 
 pygame.init()
 
@@ -14,6 +14,18 @@ class Fish(pygame.sprite.Sprite):
         'maternal_salmon': (2, 2, 0.4, 1, 5, 'salmon', True),
         'fish': (3, 3, 0.6, 1, 5, 'fish', False),
         'carp': (3, 2, 1, 1, 5, 'carp', False),
+    }
+
+    fish_frames = {  # add vector based rotations for fish movemont
+        '[0, -1]': load_asset('fishup1.png', 'fish scheiße'),
+        '[0, 1]': load_asset('fishdown1.png', 'fish scheiße'),
+        '[-1, 0]': load_asset('fishleft1.png', 'fish scheiße'),
+        '[1, 0]': load_asset('fishright1.png', 'fish scheiße'),
+        'spc': load_asset('collide.png', 'fish scheiße'),
+        '1': load_asset('fishcircle1.png', 'fish scheiße'),
+        '2': load_asset('fishcircle2.png', 'fish scheiße'),
+        '3': load_asset('fishcircle3.png', 'fish scheiße'),
+        '4': load_asset('fishcircle4.png', 'fish scheiße'),
     }
 
     fish_lists = {} # the only comprehensive list of fish.
@@ -27,18 +39,6 @@ class Fish(pygame.sprite.Sprite):
     def stop_fishing(cls):
         Fish.fish_caught = False
         Fish.fish_took = False
-
-    fish_frames = { # add vector based rotations for fish movemont
-            '[0, -1]': load_asset('fishup1.png', 'fish scheiße'),
-            '[0, 1]': load_asset('fishdown1.png','fish scheiße' ),
-            '[-1, 0]': load_asset('fishleft1.png','fish scheiße' ),
-            '[1, 0]': load_asset('fishright1.png', 'fish scheiße' ),
-            'spc': load_asset('collide.png', 'fish scheiße' ),
-            '1': load_asset('fishcircle1.png', 'fish scheiße' ),
-            '2': load_asset('fishcircle2.png', 'fish scheiße' ),
-            '3': load_asset('fishcircle3.png', 'fish scheiße' ),
-            '4': load_asset('fishcircle4.png', 'fish scheiße' ),
-        }
 
     @classmethod
     def rescale(cls):
@@ -60,13 +60,6 @@ class Fish(pygame.sprite.Sprite):
         spritelist.add(new)
         return new
 
-    def check_hook_collision(self, player_hook_cords):
-        if player_hook_cords and not Fish.fish_caught:
-            # check for hook collisions
-            self.rect.topleft = self.cords  # updates the fishes hit-boxes. This only happens when a hook is cast to save resources
-            if self.rect.collidepoint(player_hook_cords[0], player_hook_cords[1]) and not self.ignore:
-                Fish.fish_caught = self  # returns a class instance if there is a collision
-
     @classmethod
     def update_fish(cls, player, timer, inventory, game_state, grid_ahead):
         """Handles fish AI on a high level"""
@@ -74,6 +67,22 @@ class Fish(pygame.sprite.Sprite):
             for fish in species_list:
                 fish.check_hook_collision(player.hook_cords)
                 fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead)
+
+    @classmethod
+    def scared_check(cls, player_hook_cords):
+        """scares fishes away from the hook when first cast"""
+        check_radius = 60 * map_mod.scale
+        if player_hook_cords:
+            for species_list in cls.fish_lists.values():
+                for fish in species_list:
+                    difx, dify = abs(player_hook_cords[0] - fish.cords[0]), abs(player_hook_cords[1] - fish.cords[1])
+                    expx, expy = abs(player_hook_cords[0] - fish.cords[0] + fish.vector[0]), abs(
+                        player_hook_cords[1] - fish.cords[1] + fish.vector[1])
+                    dif = math.sqrt(difx * difx + dify * dify)  # checks absolute distance between fish and your hook
+                    e_dif = math.sqrt(expx * expx + expy * expy)  # checks if you are moving away or towards the hook
+                    if dif <= check_radius and dif < e_dif:  # if within a circle within radius 64 and the fish is moving towards you turn it around
+                        fish.vector.reverse()
+                        fish.ignore = 50  # makes the fish not be tricked by the bait for 500 ticks
 
     def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead):
         if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
@@ -114,11 +123,12 @@ class Fish(pygame.sprite.Sprite):
         self.origin_bound = origin_bound
         self.origin = (0, 0)
 
-    def __str__(self):
-        return self.cords
-
-    def __repr__(self):
-        return F'ID:{self.id}, cords:{self.cords}, vector:{self.vector}'
+    def check_hook_collision(self, player_hook_cords):
+        if player_hook_cords and not Fish.fish_caught:
+            # check for hook collisions
+            self.rect.topleft = self.cords  # updates the fishes hit-boxes. This only happens when a hook is cast to save resources
+            if self.rect.collidepoint(player_hook_cords[0], player_hook_cords[1]) and not self.ignore:
+                Fish.fish_caught = self  # returns a class instance if there is a collision
 
     def draw(self, player, game_state, timer, xp, yp):
         if Fish.fish_caught == self and player.hook_cords:  # draws the fish circling the hook and handles frame logic
@@ -203,58 +213,11 @@ class Fish(pygame.sprite.Sprite):
                         self.vector = ret
                         return True
 
-    @classmethod
-    def scared_check(cls, player_hook_cords):
-        """scares fishes away from the hook when first cast"""
-        check_radius = 60*map_mod.scale
-        if player_hook_cords:
-            for species_list in cls.fish_lists.values():
-                for fish in species_list:
-                    difx, dify = abs(player_hook_cords[0] - fish.cords[0]), abs(player_hook_cords[1] - fish.cords[1])
-                    expx, expy = abs(player_hook_cords[0] - fish.cords[0]+fish.vector[0]), abs(player_hook_cords[1] - fish.cords[1]+fish.vector[1])
-                    dif = math.sqrt(difx*difx+dify*dify) # checks absolute distance between fish and your hook
-                    e_dif = math.sqrt(expx * expx + expy * expy) # checks if you are moving away or towards the hook
-                    if dif <= check_radius and dif < e_dif: # if within a circle within radius 64 and the fish is moving towards you turn it around
-                        fish.vector.reverse()
-                        fish.ignore = 50 # makes the fish not be tricked by the bait for 500 ticks
+    def __str__(self):
+        return self.cords
 
-def fun_box_check(topleft, side_lengths, vectora, rang, check):
-    """Returns the vector needed to move towards a nearby point"""
-    s_l = side_lengths
-    topleft_changer = {
-        (0, 1): [[0, 1], [1, 1]], # down
-        (0, -1): [[0, 0], [1, 0]], # up
-        (-1, 0): [[0, 0], [0, 1]], # left
-        (1, 0): [[1, 1], [1, 0]], # right
-    }
-    # finds the index of the vector value we are actually moving across
-    significant_index = 0
-    significant_vector = 0
-    for index, value in enumerate(vectora):
-        if value:
-            significant_index = index
-            significant_vector = vectora[significant_index]
-
-    # the two point connected to the fish and then away from
-    inner_bounds = topleft_changer[tuple(vectora)]
-    outer_bounds = inner_bounds.copy()
-
-
-    for index, pair in enumerate(inner_bounds):
-        inner_bounds[index] = [topleft[ind2]+value*s_l for ind2, value in enumerate(pair)] # [[x+0*s_L, y+1*s_L], [x+1*s_L, y+1*s_L]]
-
-    for index, pair in enumerate(outer_bounds):
-        outer_bounds[index] = [topleft[ind2]+value*s_l for ind2, value in enumerate(pair)] # [[x+0*s_L, y+1*s_L], [x+1*s_L, y+1*s_L]]
-        outer_bounds[index][significant_index]+=significant_vector*rang # shift each point by rang via the significant vector
-
-    first, second = inner_bounds
-    third, fourth = outer_bounds
-
-    box = toolbox.box_from_4_cords(first, second, third, fourth)
-    # pygame.draw.rect(win, (0, 0, 0), (box.topleft[0]-xp, box.topleft[1]-yp, box.width, box.height), 0)
-    if box.collidepoint(check):
-            return vectora
-    return None
+    def __repr__(self):
+        return F'ID:{self.id}, cords:{self.cords}, vector:{self.vector}'
 
 class FishSpawner:
     FishSpawners = []

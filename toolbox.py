@@ -64,4 +64,41 @@ def box_from_4_cords(cord1, cord2, cord3, cord4):
     box = pygame.rect.Rect(topleft[0], topleft[1], width, height)
     return box
 
+def fun_box_check(topleft, side_lengths, vectora, rang, check):
+    """Checks to see if a box collides  with a  given point where the box is in a given direction and then returns the vector"""
+    s_l = side_lengths
+    topleft_changer = {
+        (0, 1): [[0, 1], [1, 1]], # down
+        (0, -1): [[0, 0], [1, 0]], # up
+        (-1, 0): [[0, 0], [0, 1]], # left
+        (1, 0): [[1, 1], [1, 0]], # right
+    }
+    # finds the index of the vector value we are actually moving across
+    significant_index = 0
+    significant_vector = 0
+    for index, value in enumerate(vectora):
+        if value:
+            significant_index = index
+            significant_vector = vectora[significant_index]
+
+    # the two point connected to the fish and then away from
+    inner_bounds = topleft_changer[tuple(vectora)]
+    outer_bounds = inner_bounds.copy()
+
+
+    for index, pair in enumerate(inner_bounds):
+        inner_bounds[index] = [topleft[ind2]+value*s_l for ind2, value in enumerate(pair)] # [[x+0*s_L, y+1*s_L], [x+1*s_L, y+1*s_L]]
+
+    for index, pair in enumerate(outer_bounds):
+        outer_bounds[index] = [topleft[ind2]+value*s_l for ind2, value in enumerate(pair)] # [[x+0*s_L, y+1*s_L], [x+1*s_L, y+1*s_L]]
+        outer_bounds[index][significant_index]+=significant_vector*rang # shift each point by rang via the significant vector
+
+    first, second = inner_bounds
+    third, fourth = outer_bounds
+
+    box = box_from_4_cords(first, second, third, fourth)
+    # pygame.draw.rect(win, (0, 0, 0), (box.topleft[0]-xp, box.topleft[1]-yp, box.width, box.height), 0)
+    if box.collidepoint(check):
+            return vectora
+    return None
 

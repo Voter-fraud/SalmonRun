@@ -100,6 +100,7 @@ old_man_salmon = [
     'Salmon can be found in the river above us.',
     ''
 ]
+
 old_man_loop = ['Fishing takes my worries away', 'I could go for a beer right about now']
 old_man_img = pygame.image.load('old_man_placehold.png')
 old_man = Conversible.new('old_man', old_man_img, old_man_linear1, old_man_loop, (3093.0, 2054.0), (64, 64), False, 24, 36)

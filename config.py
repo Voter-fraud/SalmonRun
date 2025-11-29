@@ -1,6 +1,6 @@
 """
 This module handles some global variables and initializations.
-Only.
+Only. map_mod should really feed into here
 """
 
 import pygame
