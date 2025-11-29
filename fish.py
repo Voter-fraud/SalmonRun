@@ -60,28 +60,29 @@ class Fish(pygame.sprite.Sprite):
         spritelist.add(new)
         return new
 
+    def check_hook_collision(self, player_hook_cords):
+        if player_hook_cords and not Fish.fish_caught:
+            # check for hook collisions
+            self.rect.topleft = self.cords  # updates the fishes hit-boxes. This only happens when a hook is cast to save resources
+            if self.rect.collidepoint(player_hook_cords[0], player_hook_cords[1]) and not self.ignore:
+                Fish.fish_caught = self  # returns a class instance if there is a collision
+
     @classmethod
     def update_fish(cls, player_hook_cords):
         """updates each fishes center and returns any hook collisions if applicable"""
         for species_list in cls.fish_lists.values():
             for fish in species_list:
-                fish.center = (fish.cords[0]-8, fish.cords[1]-8) # updates center
-                if player_hook_cords and not cls.fish_caught:
-                    # check for hook collisions
-                    fish.rect.topleft = fish.cords # updates the fishes hit-boxes. This only happens when a hook is cast to save resources
-                    if fish.rect.collidepoint(player_hook_cords[0], player_hook_cords[1]) and not fish.ignore:
-                        cls.fish_caught = fish # returns a class instance if there is a collision
-                elif cls.fish_caught:
-                    return cls.fish_caught
-            # else: cls.fish_caught = False (Seemed to not be needed)
-        return False # returns false if no fish is colliding
+                fish.check_hook_collision(player_hook_cords)
+
+    def complex_fish_movement(self):
+        ''
 
     @classmethod
     def fish_moving(cls, timer, inventory, player, game_state, grid_ahead):
         """Handles predictable fish movements"""
         for species_list in cls.fish_lists.values():
-            if timer%10 == 0: # handles expensive operations such as swerving and baiting.
-                for fish in species_list:
+            for fish in species_list:
+                if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
                     if not fish.baited(player.hook_cords) and timer%60 and fish != cls.fish_caught:
                         # every second active fishes get a chance to swerve
                         fish.fish_swerve()
@@ -98,8 +99,6 @@ class Fish(pygame.sprite.Sprite):
                             player.hook_cords = False
                             cls.fish_took = False
                             cls.fish_caught = False
-            for fish in species_list:
-                # moves fish along their current trajectory. This is not a super expensive operation so it is handled every tick.
                 if fish != cls.fish_caught:
                     fish.fish_move(grid_ahead)
 
@@ -108,13 +107,11 @@ class Fish(pygame.sprite.Sprite):
         self.image = load_asset('fishleft1.png','fish scheiße') # change later to relate to a dict that matches fish type to image
         self.rect = self.image.get_rect() # creates rect for sprite class
         self.cords = (cords[0], cords[1]) #topleft cords of the fish
-        self.center = (self.cords[0]-8, self.cords[1]-8) #central fish cords
         self.speed = f_speed*map_mod.scale
         self.swerving = swerving # measure of how unpredictable the fish is when it turns
         self.un_decisiveness = un_decisiveness # measure of how often a fish turns
         self.vector = [1, 0]
         self.id = f_id
-        self.box = self.rect.center = self.center[0]+self.vector[0]*16*map_mod.scale, self.center[1]+self.vector[1]*16*map_mod.scale
         self.circ_frame = 1
         self.ignore = 4
         self.cautiousness = cautiousness

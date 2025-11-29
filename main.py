@@ -273,7 +273,8 @@ while True:
         FishSpawner.spawn_all(grid_ahead, inventory, spritelist)
 
     #update fish then map
-    hooked_fsh = Fish.update_fish(player.hook_cords) # checks to see if a fish is on the hook.
+    Fish.update_fish(player.hook_cords) # checks to see if a fish is on the hook. updates Fish.fish_caught
+    hooked_fsh = Fish.fish_caught
     Fish.rescale()
     player.update()
     for decorr in Decor.HighDecor.decor_sprites.sprites():
@@ -300,7 +301,7 @@ while True:
                     player.cast_length = 0
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
-                        player.inspect()
+                        player.inspect(old_man, cur_quest)
                 if event.key == pygame.K_ESCAPE:
                     if player.text_cur:
                         player.text_cur = False
@@ -334,7 +335,7 @@ while True:
             else: # silly goofy error handling for if a fish is not on the line
                 logging.warning("that's not a fish!")
                 player.text_cur = "that's no fish!"
-            player.stop_fishing()
+            player.stop_fishing(Fish)
             player.cast_length = 0
         elif minigame.run((player.cords[0]-xp, player.cords[1]-yp)) == 'failure':
             game_state = 'main'
