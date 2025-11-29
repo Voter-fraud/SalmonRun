@@ -1,12 +1,17 @@
 #initialisation
-import copy, fishing_quests, reso_p, Decor
-from config import math, random, map_mod, os, pygame, game_map
+import copy, Decor
+import fishing_quests
+import reso_p
+import Decor
+from config import  map_mod,  game_map
+import math, random, pygame
 from map_mod import win
 from textM import text_box, textbox_font
 pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
 UI_scale = 2
 #file loading
+pygame.init()
 Decor.format_decor('Decor positions.txt')
 
 spritelist = pygame.sprite.Group()

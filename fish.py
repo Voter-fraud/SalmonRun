@@ -1,9 +1,11 @@
 import logging, math
-from config import pygame, random
+import config
+import pygame, random
 from toolbox import load_asset
 from reso_p import win
 import map_mod, toolbox
 
+pygame.init()
 
 class Fish(pygame.sprite.Sprite):
     fish_types = {
@@ -20,6 +22,11 @@ class Fish(pygame.sprite.Sprite):
 
     fish_caught = False # checks if a fish is circling the hook when gravity is added remove this
     fish_took = False # keeps track of if a fish is on the hook
+
+    @classmethod
+    def stop_fishing(cls):
+        Fish.fish_caught = False
+        Fish.fish_took = False
 
     fish_frames = { # add vector based rotations for fish movemont
             '[0, -1]': load_asset('fishup1.png', 'fish scheiße'),

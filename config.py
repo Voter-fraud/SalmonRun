@@ -1,9 +1,13 @@
-""""""
+"""
+This module handles some global variables and initializations.
+Only.
+"""
 
-import pygame, math, map_mod, random, time, os
-pygame.init()
-pygame.mixer.init()
-pygame.font.init()
+import pygame
+import map_mod
+
+
+
 game_map = map_mod.format_game_map('custom')
 UI_scale = 1
-spritelist = pygame.sprite.Group()
+spritelist = pygame.sprite.Group() # this sprite list does not include the tile_map, map creation is done before config

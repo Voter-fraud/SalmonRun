@@ -29,15 +29,15 @@ def draw_line(start, end, color, surf, xp, yp, size):
             # draws the line from left to right
             pygame.draw.rect(surf, color, (x-xp, y-yp, size, size))
             # for every 1 pixel moved along the x-axis the y goes up by the slope
-            x+=1
-            y+=slope
+            x+=0.1
+            y+=slope/10
             if x >= end[0]:
                 return
         elif start[0] > end[0]:
             # draws the line from right to left
             pygame.draw.rect(surf, color, (x-xp, y-yp, size, size))
-            x -= 1
-            y -= slope
+            x -= 0.1
+            y -= slope/10
             if x <= end[0]:
                 return
         else: # starting position is the same as ending position

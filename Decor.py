@@ -98,5 +98,6 @@ def store_decor(doc):
 
 def init_decor():
     format_decor('Decor positions.txt')
+
     
 init_decor()

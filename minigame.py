@@ -4,11 +4,7 @@ from config import UI_scale
 from toolbox import load_asset
 clock = pygame.time.Clock()
 
-# rhythm game shows the player struggling over the fish and pressing 2-4 buttons as they are highlighted as fast as possible to keep a bar from
-# falling to low. a fishes difficulty increases the rate at which the bar decays, a set amount of time you have to struggle or
-# reaching the far end of the bar can work as game finishes
-# fish is slowly reeled in instead of having a overall progress bar
-
+# assets
 bar_base = load_asset('bar.png', 'minigame')
 a_key = load_asset('a_key.png', 'minigame')
 s_key = load_asset('s_key.png', 'minigame')
