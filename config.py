@@ -1,13 +1,10 @@
 """
 This module handles some global variables and initializations.
-Only. map_mod should really feed into here
+Only. map_mod, reso_p, and globals should really feed into here
 """
 
 import pygame
 import map_mod
+from globals import Global
 
-
-
-game_map = map_mod.format_game_map('custom')
-UI_scale = 1
-spritelist = pygame.sprite.Group() # this sprite list does not include the tile_map, map creation is done before config
+Global.game_map = map_mod.format_game_map('custom')

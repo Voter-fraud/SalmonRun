@@ -9,7 +9,8 @@ import map_mod
 import reso_p
 from reso_p import win
 
-from config import game_map
+import config
+from globals import Global
 
 from sound_library import rod_cast_sound
 
@@ -184,7 +185,7 @@ class PlayerSprite(pygame.sprite.Sprite):
             logging.warning('player does not have a direction')
             return 'player has no position'
         try:
-            if '1' in map_mod.return_grids((check, check), game_map): # checks to make sure the rod is going into water
+            if '1' in map_mod.return_grids((check, check), Global.game_map): # checks to make sure the rod is going into water
                 self.hook_cords = check # sets hook cords for fish collisions
         except IndexError:
             logging.warning('Player attempted to fish outside of game') # add some numerous comments for trying to do this in game

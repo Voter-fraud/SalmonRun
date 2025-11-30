@@ -1,7 +1,10 @@
-from config import pygame, UI_scale
+import config
+from globals import Global
+
 from reso_p import win
 from toolbox import load_asset
-import os, copy, reso_p, Decor
+import copy, reso_p, Decor
+import pygame
 class Item:
     items = {
 
@@ -26,7 +29,7 @@ class Item:
     def __init__(self, is_tool, is_fish, img, name):
         self.is_tool = is_tool
         self.is_fish = is_fish
-        self.img = pygame.transform.scale(img, (32*UI_scale, 32*UI_scale))
+        self.img = pygame.transform.scale(img, (32*Global.UI_scale, 32*Global.UI_scale))
         self.name = name
 
     def draw(self, cords):
@@ -35,7 +38,7 @@ class Item:
 
     def rescale(self):
         """Rescales an item in accordance with UI_scale"""
-        self.img = pygame.transform.scale(self.img, (32 * UI_scale, 32 * UI_scale))
+        self.img = pygame.transform.scale(self.img, (32 * Global.UI_scale, 32 * Global.UI_scale))
 
     def copy_new(self):
         """Returns a copy of an item instance"""
@@ -86,9 +89,9 @@ class Inventory:
     @classmethod
     def rescale(cls):
         """Rescales the inventory based on UI_scale"""
-        inventory.inventory_slot = pygame.transform.scale(inventory.inventory_slot, (32 * UI_scale, 32 * UI_scale))
-        inventory.highlight = pygame.transform.scale(inventory.highlight, (32*UI_scale, 32*UI_scale))
-        inventory.active = reso_p.win_height-110*UI_scale, 110*UI_scale
+        inventory.inventory_slot = pygame.transform.scale(inventory.inventory_slot, (32 * Global.UI_scale, 32 * Global.UI_scale))
+        inventory.highlight = pygame.transform.scale(inventory.highlight, (32*Global.UI_scale, 32*Global.UI_scale))
+        inventory.active = reso_p.win_height-110*Global.UI_scale, 110*Global.UI_scale
 
     def __init__(self):
         self.inventory_slot = load_asset('inventory_slot.png', 'items')
@@ -100,8 +103,8 @@ class Inventory:
         self.highlight = load_asset('inv_select.png', 'items')
         self.grabbed = '' # What you are currently holding
         self.bait_slot = ''
-        self.active = reso_p.win_height-110*UI_scale, 110*UI_scale # area in which inventory collisions are checked
-        self.slot_size = 32 * UI_scale
+        self.active = reso_p.win_height-110*Global.UI_scale, 110*Global.UI_scale # area in which inventory collisions are checked
+        self.slot_size = 32 * Global.UI_scale
         self.gap = 2
 
     def draw(self, pos):

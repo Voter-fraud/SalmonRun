@@ -1,5 +1,5 @@
 #initialisation
-import copy, logging, math, pygame
+import logging
 import fishing_quests
 import reso_p
 import menu_handler
@@ -8,7 +8,10 @@ import Decor, minigame
 import map_mod
 import sound_library
 import toolbox
-from config import game_map, UI_scale, spritelist
+
+import config # just to run config
+from globals import Global
+
 from map_mod import win
 from toolbox import return_corners, load_asset
 from textM import text_box, textbox_font
@@ -34,7 +37,7 @@ pygame.init() # I do not know if this is relevant
 def init_main():
     """Adds all high decorations into the game and then rescales everything"""
     for decor in Decor.HighDecor.decor_sprites.sprites():
-        spritelist.add(decor)
+        Global.spritelist.add(decor)
     rescale_game()
 
 class StatTracker:
@@ -64,9 +67,9 @@ class FishingRod:
 class Balance:
     def __init__(self, bal, game_long_balance):
         self.image = load_asset('coin_counter.png')
-        self.f_cords = (reso_p.win_length-73*UI_scale, 34*UI_scale)
+        self.f_cords = (reso_p.win_length-73*Global.UI_scale, 34*Global.UI_scale)
         self.color = (0, 0, 0)
-        self.cords = (reso_p.win_length-110*UI_scale, 32*UI_scale)
+        self.cords = (reso_p.win_length-110*Global.UI_scale, 32*Global.UI_scale)
         self.bal = bal
         self.total = game_long_balance
         self.font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size
@@ -83,13 +86,13 @@ class Balance:
         self.bal -= amount
 
     def rescale(self):
-        self.image = pygame.transform.scale(self.image, (100*UI_scale, 50*UI_scale))
-        self.font = pygame.font.SysFont('Comic Sans MS', 30*UI_scale)
+        self.image = pygame.transform.scale(self.image, (100*Global.UI_scale, 50*Global.UI_scale))
+        self.font = pygame.font.SysFont('Comic Sans MS', 30*Global.UI_scale)
 
 balance = Balance(0, 0)
 
 player_tracker = StatTracker(player)
-spritelist.add(player)
+Global.spritelist.add(player)
 
 quests = [
 # start game with dialouge lines of the character wishing they could get a cool boat for fishing and leisure
@@ -106,14 +109,14 @@ cur_quest = quests[0]
 
 def rescale_ui():
     global text_box, textbox_font
-    text_box = pygame.transform.scale(text_box, (510*UI_scale, 70*UI_scale))
-    textbox_font = pygame.font.SysFont('Comic Sans MS', 20*UI_scale)
+    text_box = pygame.transform.scale(text_box, (510*Global.UI_scale, 70*Global.UI_scale))
+    textbox_font = pygame.font.SysFont('Comic Sans MS', 20*Global.UI_scale)
     inventory.Inventory.rescale()
     balance.rescale()
 
 def rescale_game():
     rescale_ui()
-    for sprite in spritelist.sprites():
+    for sprite in Global.spritelist.sprites():
         if not isinstance(sprite, PlayerSprite):
             sprite.rescale()
     for sprite in Decor.LowDecor.decor_sprites.sprites():
@@ -122,7 +125,7 @@ def rescale_game():
 
 def generate_surface():
     pss = player.xp_yp
-    return map_mod.tile_convert(game_map)
+    return map_mod.tile_convert(Global.game_map)
 
 def draw_notifications():
     if cur_quest.mode == 'start':
@@ -137,16 +140,16 @@ def draw_ui():
     inventory.inventory.draw(pos)
     small_font = pygame.font.SysFont('Comic Sans MS', 10)
     if player.text_cur: # draws sprite inspection dialog
-        win.blit(text_box, ((reso_p.win_length-510*UI_scale)/2, reso_p.win_height-80*UI_scale))
-        win.blit(textbox_font.render(str(player.text_cur), False, (0, 0, 0)), ((reso_p.win_length-475*UI_scale)/2, reso_p.win_height-65*UI_scale))
+        win.blit(text_box, ((reso_p.win_length-510*Global.UI_scale)/2, reso_p.win_height-80*Global.UI_scale))
+        win.blit(textbox_font.render(str(player.text_cur), False, (0, 0, 0)), ((reso_p.win_length-475*Global.UI_scale)/2, reso_p.win_height-65*Global.UI_scale))
     pos_p = (pos[0] + xp, pos[1] + yp)
     win.blit(small_font.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
-    cur_quest.draw(UI_scale)
+    cur_quest.draw(Global.UI_scale)
 
 def dynamic_drawing():
     """Draws inputted sprites in order of how high their Y cord is for example y=5 is drawn over y=4"""
     s_list = [] # becomes list of sprites to draw in order
-    spritelist_copy = spritelist.sprites().copy() # initial list of sprites
+    spritelist_copy = Global.spritelist.sprites().copy() # initial list of sprites
     for sprite in spritelist_copy:
         s_list.append((sprite.rect.bottomleft[1])) # tracks each sprites bottom coordinates
         s_list.sort()
@@ -180,7 +183,7 @@ def drawmap():
 
 def grid_ahead(cords, length, width):
     corners = return_corners(cords, width, length)
-    return map_mod.return_grids(corners, game_map)
+    return map_mod.return_grids(corners, Global.game_map)
 
 def check_walkable(noclip, dist):
     if noclip:
@@ -309,7 +312,7 @@ while True:
                 old_man.linear_list = cur_quest.newtext
                 old_man.status = 0
                 old_man.active = True
-        FishSpawner.spawn_all(grid_ahead, inventory, spritelist)
+        FishSpawner.spawn_all(grid_ahead, inventory, Global.spritelist)
 
     #update fish then map
     Fish.update_fish(player, timer, inventory, game_state, grid_ahead) # checks to see if a fish is on the hook. updates Fish.fish_caught

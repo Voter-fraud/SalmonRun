@@ -1,6 +1,9 @@
 import pygame, random
-from reso_p import win, scale
-from config import UI_scale
+from reso_p import win
+
+import config
+from globals import Global
+
 from toolbox import load_asset
 clock = pygame.time.Clock()
 
@@ -13,12 +16,12 @@ sel = load_asset('sel_key.png', 'minigame')
 n_key = load_asset('next_key.png', 'minigame')
 
 # these should be put into functions.
-bar_base=pygame.transform.scale(bar_base, (80*UI_scale, 20*UI_scale))
-sel=pygame.transform.scale(sel, (16*UI_scale, 16*UI_scale))
-a_key=pygame.transform.scale(a_key, (16*UI_scale, 16*UI_scale))
-s_key=pygame.transform.scale(s_key, (16*UI_scale, 16*UI_scale))
-d_key=pygame.transform.scale(d_key, (16*UI_scale, 16*UI_scale))
-n_key=pygame.transform.scale(n_key, (16*UI_scale, 16*UI_scale))
+bar_base=pygame.transform.scale(bar_base, (80*Global.UI_scale, 20*Global.UI_scale))
+sel=pygame.transform.scale(sel, (16*Global.UI_scale, 16*Global.UI_scale))
+a_key=pygame.transform.scale(a_key, (16*Global.UI_scale, 16*Global.UI_scale))
+s_key=pygame.transform.scale(s_key, (16*Global.UI_scale, 16*Global.UI_scale))
+d_key=pygame.transform.scale(d_key, (16*Global.UI_scale, 16*Global.UI_scale))
+n_key=pygame.transform.scale(n_key, (16*Global.UI_scale, 16*Global.UI_scale))
 
 
 class ProgressBar(pygame.sprite.Sprite):

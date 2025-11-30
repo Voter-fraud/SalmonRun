@@ -1,12 +1,15 @@
+
 import config
+from globals import Global
+
 from toolbox import cut_string, load_asset
-from config import pygame, UI_scale
 from reso_p import win
-import os, reso_p, map_mod
+import reso_p, map_mod
+import pygame
 pygame.init()
 
-base = pygame.transform.scale(load_asset('base.png','quest_imgs', ), (128*UI_scale, 48*UI_scale))
-mid_font = pygame.font.SysFont('Comic Sans MS', 10*UI_scale)
+base = pygame.transform.scale(load_asset('base.png','quest_imgs', ), (128*Global.UI_scale, 48*Global.UI_scale))
+mid_font = pygame.font.SysFont('Comic Sans MS', 10*Global.UI_scale)
 
 class FishCatching:
     def __init__(self, catch_amount, fish_type, initial_values, img, font, start_text):
@@ -14,7 +17,7 @@ class FishCatching:
         self.type = fish_type
         self.initials = dict(initial_values) # makes a copy of the initial fish catching statistics
         self.caught = 0
-        self.image = pygame.transform.scale(img, (128*UI_scale, 48*UI_scale))
+        self.image = pygame.transform.scale(img, (128*Global.UI_scale, 48*Global.UI_scale))
         self.font = font
 
         self.finish_text = 'Quest Completed!'
@@ -70,7 +73,7 @@ class TalkTo:
     def __init__(self, character, img, font, newtext):
         self.character = character
         self.newtext = newtext
-        self.image = pygame.transform.scale(img, (128*UI_scale, 48*UI_scale))
+        self.image = pygame.transform.scale(img, (128*Global.UI_scale, 48*Global.UI_scale))
         self.font = font
 
         self.finish_text = 'New Quest!' # talking to a character is an intermediate quest so transitions should be clean
@@ -122,7 +125,7 @@ class FishSelling:
         self.type = fish_type
         self.initials = dict(initial_values) # makes a copy of the initial fish sold statistics
         self.sold = 0
-        self.image = pygame.transform.scale(img, (128*UI_scale, 48*UI_scale))
+        self.image = pygame.transform.scale(img, (128*Global.UI_scale, 48*Global.UI_scale))
         self.font = font
 
         self.finish_text = 'Quest Completed!'

@@ -2,7 +2,8 @@ import pygame
 import map_mod
 import fishing_quests
 from reso_p import win
-from config import spritelist
+import config
+from globals import Global
 
 
 class Conversible(pygame.sprite.Sprite):
@@ -14,7 +15,7 @@ class Conversible(pygame.sprite.Sprite):
         if func:
             new_c.func = func
         cls.talkables.append(new_c)
-        spritelist.add(new_c)
+        Global.spritelist.add(new_c)
         return new_c
 
     @classmethod

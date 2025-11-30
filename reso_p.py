@@ -1,6 +1,6 @@
 """
 This module creates and then is able to manage game resolution.
-Under no circumstances should ANY project specific modules be imported.
+Under no circumstances should ANY project specific modules be imported besides globals.
 """
 
 
