@@ -2,10 +2,11 @@
 import copy, logging, math, pygame
 import fishing_quests
 import reso_p
-import real_menu_handler
+import menu_handler
 
 import Decor, minigame
 import map_mod
+import sound_library
 import toolbox
 from config import game_map, UI_scale, spritelist
 from map_mod import win
@@ -190,6 +191,46 @@ def check_walkable(noclip, dist):
         return False
     return True
 
+def handle_events():
+    global game_state
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quit()
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE:
+                if not player.hook_cords:
+                    player.fish_hold = False
+                    player.cast_rod()
+                    Fish.scared_check(player.hook_cords)
+                else:
+                    player.stop_fishing(Fish)
+                player.cast_length = 0
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_e:
+                player.inspect(old_man, cur_quest)
+            if event.key == pygame.K_ESCAPE:
+                if player.text_cur:
+                    player.text_cur = False
+                else:
+                    menu_handler.run_menu()
+            if event.key == pygame.K_q:
+                player.sprint_toggle()
+            if event.key == pygame.K_SPACE:
+                handle_rod()
+            if event.key == pygame.K_F11:
+                game_state = 'minigame'
+        inv = inventory.inventory
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            grab_pos()  # prints cursor location useful for debugging
+            if event.button == 1:
+                if pos[1] > inv.active[0] and inv.active[
+                    1] or inv.grabbed:  # checks if you are withing the inventories cords to avoid pointless and relatively expensive checks
+                    inv.click(pos)
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                if pos[1] > inv.active[0] and inv.active[1] or inv.grabbed:
+                    inv.release(pos, grab_pos(), player, balance, player_tracker)
+
 def handle_key_holds():
     if player.can_move:
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # make high-end functions more readable
@@ -250,9 +291,7 @@ game_state = 'main'
 Fish.rescale()
 Fish.update_fish(player, timer, inventory, game_state, grid_ahead)
 while True:
-    walking_sound.set_volume(real_menu_handler.sound/100)
-    rod_pull_sound.set_volume(real_menu_handler.sound/100)
-    rod_cast_sound.set_volume(real_menu_handler.sound/100)
+    sound_library.update_volume()
     pos = pygame.mouse.get_pos()
     ps = player.xp_yp
     yp, xp =  ps[0], ps[1]
@@ -285,43 +324,8 @@ while True:
     if game_state == 'main':
         keys = pygame.key.get_pressed()
         handle_key_holds()
+        handle_events()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
-                    if not player.hook_cords:
-                        player.fish_hold = False
-                        player.cast_rod()
-                        Fish.scared_check(player.hook_cords)
-                    else:
-                        player.stop_fishing(Fish)
-                    player.cast_length = 0
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                        player.inspect(old_man, cur_quest)
-                if event.key == pygame.K_ESCAPE:
-                    if player.text_cur:
-                        player.text_cur = False
-                    else:
-                        real_menu_handler.run_menu()
-                if event.key == pygame.K_q:
-                    player.sprint_toggle()
-                if event.key == pygame.K_SPACE:
-                    handle_rod()
-                if event.key == pygame.K_F11:
-                    game_state = 'minigame'
-            inv = inventory.inventory
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                grab_pos() # prints cursor location useful for debugging
-                if event.button == 1:
-                    if pos[1] > inv.active[0] and inv.active[1] or inv.grabbed: # checks if you are withing the inventories cords to avoid pointless and relatively expensive checks
-                        inv.click(pos)
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    if pos[1] > inv.active[0] and inv.active[1] or inv.grabbed:
-                        inv.release(pos, grab_pos(), player, balance, player_tracker)
     elif game_state == 'minigame':
         if minigame.run((player.cords[0]-xp, player.cords[1]-yp)) == 'success':
             game_state = 'main'

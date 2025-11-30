@@ -1,25 +1,14 @@
-from inspect import isclass
-
 import pygame
-import os, reso_p
+
 from reso_p import win
 from toolbox import load_asset
+from sound_library import Sound
+from textM import standard_comic
 
-from pygame import K_LEFT
-
-# initialising programs
-pygame.init()
-pygame.mixer.init()
-pygame.font.init()
-# display window setup
-pygame.display.set_caption('Gamble core')
 # global variables
 clock = pygame.time.Clock()
-my_font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size
-small_font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size
-soundstate = True
 menu_state = 'main'
-sound = 100
+
 # loading in game assets
 menu_backgrounds = {
     'good one': load_asset('fucking_beatifull_bkg.png', 'menu'),
@@ -32,50 +21,10 @@ sound_slid = (load_asset('sound_sel.png', 'menu'), load_asset('sound_slider.png'
 controls_toggle = load_asset('controls.png', 'menu')
 graphics_toggle = (load_asset('800x600.png', 'menu'), load_asset('1280x1024.png', 'menu'),
 load_asset('1920x1090.png', 'menu'))
-def s_toggle():
-    global sound
-    if sound:
-        sound = 0
-    else:
-        sound = 50
 
-def r_toggle():
-    file = open('Reso.txt', 'w')
-    if reso_p.res[0] == '800':
-        reso_p.res = '1280', '1024'
-        file.write('1280, 1024')
-    elif reso_p.res[0] == '1280':
-        reso_p.res = '1920', '1080'
-        file.write('1920, 1080')
-    else:
-        reso_p.res = '800', '600'
-        file.write('800, 600')
-    file.close()
-
-def r_upd():
-    if reso_p.res[0] == '800':
-        return 0
-    elif reso_p.res[0] == '1280':
-        return 1
-    else:
-        return 2
-
-def s_upd():
-    if sound == 0:
-        return 0
-    if sound:
-        return 1
-
-
-def s_change(dir):
-    global sound
-    if dir == 'right' and sound < 100: sound += 1
-    if dir == 'left' and sound > 0: sound -= 1
-def t_update():
-    return sound
 
 class Menu:
-
+    """The menu class holds many other classes of buttons inside of it which run of functions."""
     def __init__(self, bkg_img, menu_name):
         self.name = menu_name
         self.background = bkg_img
@@ -234,17 +183,18 @@ class Menu:
                 internal_timer -= 1
 
 main_menu = Menu(menu_backgrounds['good one'], 'main')
-main_menu.create_toggle_button('resolution', sound_toggle[0], graphics_toggle, (350, 250), r_toggle, r_upd)
-main_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350, 350), (430, 370),
-                                str(sound), small_font, t_update,s_change)
-main_menu.create_transfer_button(controls_toggle, sound_trans[0], 'controls trans', (350, 450), 'controls') # controls (static screen)
-# main_menu.create_transfer_button(sound_trans[1], sound_trans[0], 'sound trans', (350, 550), 'credits') # credits (static screen)
 
-#reso toggle
+from menu_functions import resolution_toggle
+main_menu.create_toggle_button('resolution', sound_toggle[0], graphics_toggle, (350, 250), resolution_toggle.r_toggle, resolution_toggle.r_upd)
+
+from menu_functions import sound_slider
+main_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350, 350), (430, 370),
+                                str(Sound.effects_volume), standard_comic, sound_slider.t_update, sound_slider.s_change)
+main_menu.create_transfer_button(controls_toggle, sound_trans[0], 'controls trans', (350, 450), 'controls') # controls (static screen)
 
 controls_menu = Menu(menu_backgrounds['controls'], 'controls')
 controls_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350000, 450), (30000, 470),
-                                str(sound), small_font, t_update,s_change)
+                                str(Sound.effects_volume), standard_comic, sound_slider.t_update, sound_slider.s_change) # why does the game break without this?
 
 
 menu_dict = {
