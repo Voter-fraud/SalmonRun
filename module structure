@@ -1,0 +1,41 @@
+This games module structure is a bit messy but here I will define each part.
+
+fish behaviours.py
+fishing_quests.py
+globals.py
+interactible_zone.py
+inventory.py
+menu_functions folder (resolution_toggle.py, sound_slider.py)
+map_editor.py
+map_mod.py
+menu_handler.py
+minigame.py
+NPCs.py
+player_mod.py
+reso_p.py
+sound_library.py
+textM.py
+toolbox.py
+
+Tier 0 modules: (libraries)
+"""Tier 0 modules run off of only standard libraries and are built to be just function libraries and not project specific"
+
+Tier 1 modules: (primal setups)
+"""Tier 1 modules run off of only non project specific modules. including Tier 0's"""
+
+Tier 1.5 modules: (complex setups)
+"""Like Tier 1 modules but also might contain some tier 1 or even tier 1.5 modules"""
+config.py
+Decor.py
+
+Tier 2A modules (feeders)
+"""can contain many imports but does not handle game_state runs"""
+fish.py
+
+
+Tier 2B modules (sub runners)
+"""contains many imports and sometimes takes over running the game"""
+
+Tier 3 modules (final runners)
+"""can contain any number of imports and is the file that is run initially"""
+main.py

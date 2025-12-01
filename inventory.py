@@ -97,7 +97,7 @@ class Inventory:
         self.inventory_slot = load_asset('inventory_slot.png', 'items')
         self.inv = [
             [Item.new('fish'), '', ''],
-            [Item.new('salmon'), '', ''],
+            [Item.new('worms'), '', ''],
             ['', '', ''],
         ]
         self.highlight = load_asset('inv_select.png', 'items')
@@ -162,7 +162,7 @@ class Inventory:
                             tracker.sell_fish(self.grabbed.name)
                         self.grabbed = ''
                         player.text_cur = 'sold'
-                        balance.add_money(10) # make varying prices later
+                        balance.balance.add_money(10) # make varying prices later
                         return ''
             y = reso_p.win_height-(self.slot_size+self.gap)*3 # y cords
             for row_i, row in enumerate(self.inv):

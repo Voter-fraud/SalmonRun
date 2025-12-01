@@ -215,7 +215,7 @@ class PlayerSprite(pygame.sprite.Sprite):
     def inspect(self, old_man, cur_quest):
         if self.rect.colliderect(old_man.box):
             old_man.talk(cur_quest, player)
-            return
+            return True
         if player.text_cur:
             player.text_cur = False
 

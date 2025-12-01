@@ -1,4 +1,5 @@
 import pygame
+import menu_handler
 
 """
 I want to make these zones very simple and easy to add mini functions into. 
@@ -6,7 +7,7 @@ Since these will be so simple unlike with the menu system we can probably keep t
 later add speceficity to which game map but currently that is completely unnecessary
 """
 def market_func():
-    ''
+    menu_handler.run_menu('market')
 
 class InteractZone:
 
@@ -27,3 +28,5 @@ class InteractZone:
     def check_interaction(self, check_rect):
         if self.rect.colliderect(check_rect):
             self.run()
+
+market_zone = InteractZone.create_zone('market_zone', (3660, 2245), 200, 300, market_func)

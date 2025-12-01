@@ -9,8 +9,12 @@ import map_mod
 import sound_library
 import toolbox
 
+from interactible_zone import market_zone
+
 import config # just to run config
 from globals import Global
+
+import balance
 
 from map_mod import win
 from toolbox import return_corners, load_asset
@@ -64,32 +68,7 @@ class FishingRod:
         self.max_cast = max_cast
         self.lure = lure
 
-class Balance:
-    def __init__(self, bal, game_long_balance):
-        self.image = load_asset('coin_counter.png')
-        self.f_cords = (reso_p.win_length-73*Global.UI_scale, 34*Global.UI_scale)
-        self.color = (0, 0, 0)
-        self.cords = (reso_p.win_length-110*Global.UI_scale, 32*Global.UI_scale)
-        self.bal = bal
-        self.total = game_long_balance
-        self.font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size
 
-    def draw(self):
-        win.blit(self.image, self.cords)
-        win.blit(self.font.render(str(self.bal), False, self.color), self.f_cords)
-
-    def add_money(self, amount):
-        self.bal += amount
-        self.total += amount
-
-    def use_money(self, amount):
-        self.bal -= amount
-
-    def rescale(self):
-        self.image = pygame.transform.scale(self.image, (100*Global.UI_scale, 50*Global.UI_scale))
-        self.font = pygame.font.SysFont('Comic Sans MS', 30*Global.UI_scale)
-
-balance = Balance(0, 0)
 
 player_tracker = StatTracker(player)
 Global.spritelist.add(player)
@@ -112,7 +91,7 @@ def rescale_ui():
     text_box = pygame.transform.scale(text_box, (510*Global.UI_scale, 70*Global.UI_scale))
     textbox_font = pygame.font.SysFont('Comic Sans MS', 20*Global.UI_scale)
     inventory.Inventory.rescale()
-    balance.rescale()
+    balance.balance.rescale()
 
 def rescale_game():
     rescale_ui()
@@ -136,7 +115,7 @@ def draw_notifications():
         ''
 
 def draw_ui():
-    balance.draw()
+    balance.balance.draw()
     inventory.inventory.draw(pos)
     small_font = pygame.font.SysFont('Comic Sans MS', 10)
     if player.text_cur: # draws sprite inspection dialog
@@ -210,12 +189,16 @@ def handle_events():
                 player.cast_length = 0
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_e:
-                player.inspect(old_man, cur_quest)
+                if player.inspect(old_man, cur_quest):
+                    if player.text_cur:
+                        player.text_cur = False
+                else:
+                    market_zone.check_interaction(player.rect)
             if event.key == pygame.K_ESCAPE:
                 if player.text_cur:
                     player.text_cur = False
                 else:
-                    menu_handler.run_menu()
+                    menu_handler.run_menu('main')
             if event.key == pygame.K_q:
                 player.sprint_toggle()
             if event.key == pygame.K_SPACE:

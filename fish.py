@@ -9,11 +9,34 @@ pygame.init()
 
 class Fish(pygame.sprite.Sprite):
     fish_types = {
-        # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname)
-        'salmon': (2, 1, 0.4, 1, 5, 'salmon', False), # slightly re work undecisiveness
-        'maternal_salmon': (2, 2, 0.4, 1, 5, 'salmon', True),
-        'fish': (3, 3, 0.6, 1, 5, 'fish', False),
-        'carp': (3, 2, 1, 1, 5, 'carp', False),
+        # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
+        'salmon': (2, 1, 0.4, 1, 5, 'salmon', False,
+                   { # baitlist
+                        'worms': 1000,
+                        'default': 1.2
+                   }
+                ),
+
+        'maternal_salmon': (2, 2, 0.4, 1, 5, 'salmon', True,
+                    { # baitlist
+                        'worms': 1000,
+                        'default': 1.2
+                   }
+                ),
+
+        'fish': (3, 3, 0.6, 1, 5, 'fish', False,
+                    { # baitlist
+                        'worms': 1000,
+                        'default': 1.2
+                   }
+                 ),
+
+        'carp': (3, 2, 1, 1, 5, 'carp', False,
+                    { # baitlist
+                        'worms': 1000,
+                        'default': 1.2
+                   }
+                 ),
     }
 
     fish_frames = {  # add vector based rotations for fish movemont
@@ -52,9 +75,9 @@ class Fish(pygame.sprite.Sprite):
                     fish.rect.width = 16 * map_mod.scale
 
     @classmethod
-    def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, spritelist, inventory):
+    def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, spritelist, bait_dict, inventory):
         """creates a new fish instance in the fish_list sprite group"""
-        new = Fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, inventory)
+        new = Fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, bait_dict, inventory)
         new.origin = cords #original fish position
         cls.fish_lists[item].add(new)
         spritelist.add(new)
@@ -86,7 +109,7 @@ class Fish(pygame.sprite.Sprite):
 
     def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead):
         if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
-            if not self.baited(player.hook_cords) and timer % 60 and self != Fish.fish_caught:
+            if not self.baited(player.hook_cords, inventory.inventory.bait_slot) and timer % 60 and self != Fish.fish_caught:
                 # every second active fishes get a chance to swerve
                 self.fish_swerve()
             elif self == Fish.fish_caught and not Fish.fish_took:
@@ -105,7 +128,7 @@ class Fish(pygame.sprite.Sprite):
         if self != Fish.fish_caught:
             self.fish_move(grid_ahead)
 
-    def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, inventory):
+    def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, bait_dict, inventory):
         super().__init__()
         self.image = load_asset('fishleft1.png','fish scheiße') # change later to relate to a dict that matches fish type to image
         self.rect = self.image.get_rect() # creates rect for sprite class
@@ -122,6 +145,11 @@ class Fish(pygame.sprite.Sprite):
         self.side_length = 16
         self.origin_bound = origin_bound
         self.origin = (0, 0)
+        self.bait_dict_atr = bait_dict
+
+
+    def bait_dict(self, bait):
+        return self.bait_dict_atr.get(bait, self.bait_dict_atr['default'])
 
     def check_hook_collision(self, player_hook_cords):
         if player_hook_cords and not Fish.fish_caught:
@@ -199,16 +227,20 @@ class Fish(pygame.sprite.Sprite):
 
 
 
-    def baited(self, player_hook_cords): # sadly has to be probably changed a bit
+    def baited(self, player_hook_cords, inventory_bait_slot): # sadly has to be probably changed a bit
         if self.ignore > 0:
             self.ignore -= 1
         elif player_hook_cords:
+            if inventory_bait_slot == '':
+                inventory_bait_slot = 1
+            else:
+                inventory_bait_slot = inventory_bait_slot.name
             dif = abs(player_hook_cords[0] - self.cords[0]) + abs(player_hook_cords[1] - self.cords[1])
             # if dif > player.baitlevel * 3 + 64*map_mod.scale:
                 # return False
             for vector in ([0, -1], [0, 1], [1, 0], [-1, 0]):
                 if vector != [self.vector[0]*-1, self.vector[1]*-1]: # does not check back of fish
-                    ret = fun_box_check((self.cords[0], self.cords[1]), self.side_length, vector, 32 * map_mod.scale, player_hook_cords)
+                    ret = fun_box_check((self.cords[0], self.cords[1]), self.side_length, vector, 32 * map_mod.scale*self.bait_dict(inventory_bait_slot), player_hook_cords)
                     if ret:
                         self.vector = ret
                         return True
@@ -259,9 +291,9 @@ class FishSpawner:
             r = random.randrange(0, self.tot)
             for key, value in self.spwn_list.items():
                 if value[0] < r <= value[1]:
-                    swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound = Fish.fish_types[key]
+                    swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound, bait_dict = Fish.fish_types[key]
 
-                    new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound, spritelist, inventory)
+                    new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound, spritelist, bait_dict, inventory)
                     self.cur.add(new)
 
 FishSpawner.new([1500, 1191], {

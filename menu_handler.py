@@ -12,7 +12,8 @@ menu_state = 'main'
 # loading in game assets
 menu_backgrounds = {
     'good one': load_asset('fucking_beatifull_bkg.png', 'menu'),
-    'controls': load_asset('controls_page.png', 'menu')
+    'controls': load_asset('controls_page.png', 'menu'),
+    'market_menu': load_asset('market_menu.png', 'menu', 'market_menu')
 }
 sound_toggle = (load_asset('sound_sel.png', 'menu'), (load_asset('sound_off.png', 'menu' ), load_asset('sound_on.png', 'menu' )))
 sound_trans =(load_asset('sound_sel.png', 'menu'), load_asset('sound_trans.png', 'menu'))
@@ -148,6 +149,8 @@ class Menu:
                     elif event.key == pygame.K_ESCAPE:
                         if menu_state == 'main':
                             return 'quit'
+                        elif menu_state == 'market':
+                            return 'quit'
                         menu_state = 'main'
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -197,12 +200,26 @@ controls_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',
                                 str(Sound.effects_volume), standard_comic, sound_slider.t_update, sound_slider.s_change) # why does the game break without this?
 
 
+market_menu = Menu(menu_backgrounds['market_menu'], 'market')
+worms_button = (load_asset('worms_button.png', 'menu', 'market_menu'), load_asset('worms_button.png', 'menu', 'market_menu'))
+
+market_menu.create_toggle_button('worms', load_asset('market_sel.png', 'menu', 'market_menu'), worms_button,
+                                 (238, 188),
+                                 resolution_toggle.r_toggle, resolution_toggle.r_upd)
+
+market_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350000, 450), (30000, 470),
+                                str(Sound.effects_volume), standard_comic, sound_slider.t_update, sound_slider.s_change) # why does the game break without this?
+
+
 menu_dict = {
     'main': main_menu,
-    'controls': controls_menu
+    'controls': controls_menu,
+    'market': market_menu
 }
 
-def run_menu():
+def run_menu(state):
+    global menu_state
+    menu_state = state
     while True:
         if menu_dict[menu_state].run_menu(60) == 'quit':
             return
