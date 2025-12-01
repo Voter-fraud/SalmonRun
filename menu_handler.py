@@ -4,6 +4,7 @@ from reso_p import win
 from toolbox import load_asset
 from sound_library import Sound
 from textM import standard_comic
+import inventory
 
 # global variables
 clock = pygame.time.Clock()
@@ -203,12 +204,10 @@ controls_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',
 market_menu = Menu(menu_backgrounds['market_menu'], 'market')
 worms_button = (load_asset('worms_button.png', 'menu', 'market_menu'), load_asset('worms_button.png', 'menu', 'market_menu'))
 
+from menu_functions import bait_buyer
 market_menu.create_toggle_button('worms', load_asset('market_sel.png', 'menu', 'market_menu'), worms_button,
                                  (238, 188),
-                                 resolution_toggle.r_toggle, resolution_toggle.r_upd)
-
-market_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350000, 450), (30000, 470),
-                                str(Sound.effects_volume), standard_comic, sound_slider.t_update, sound_slider.s_change) # why does the game break without this?
+                                 bait_buyer.worm_toggle, bait_buyer.r_upd)
 
 
 menu_dict = {
