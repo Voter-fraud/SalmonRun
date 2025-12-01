@@ -9,6 +9,7 @@ class Item:
     items = {
 
     } # list of all valid items
+
     @classmethod
     def ret_items(cls, prop):
         """Return a dict of all items that have the given property with their values being 0, as well as a total key"""
@@ -26,11 +27,12 @@ class Item:
         new = copy.copy(cls.items[name])
         return new
 
-    def __init__(self, is_tool, is_fish, img, name):
+    def __init__(self, is_tool, is_fish, img, name, sell):
         self.is_tool = is_tool
         self.is_fish = is_fish
         self.img = pygame.transform.scale(img, (32*Global.UI_scale, 32*Global.UI_scale))
         self.name = name
+        self.sell = sell
 
     def draw(self, cords):
         """Draws the item at the specefied cords"""
@@ -49,12 +51,12 @@ class Item:
 def item_from_str(item_str):
     """Adds an item to the items dict from a formatted string list."""
     # this function is likely to only ever be used by the import_item_list function because it had the right formatting
-    is_tool, is_fish, name = item_str[0], item_str[1], item_str[2]
+    is_tool, is_fish, name, sell = item_str[0], item_str[1], item_str[2], item_str[3]
     if is_tool == 'False':
         is_tool = False
     if item_str == 'False':
         is_fish = False
-    Item.items[name] = Item(is_tool, is_fish, load_asset(F'{name}_item.png', 'items', ), name)
+    Item.items[name] = Item(is_tool, is_fish, load_asset(F'{name}_item.png', 'items', ), name, sell)
 
 def import_item_list(file):
     """Turns a text file containing formatted item information into a list of lists(items)"""
@@ -160,9 +162,9 @@ class Inventory:
                     if sprite.rect.collidepoint(grab_pos):
                         if isinstance(self.grabbed, Item) and self.grabbed.is_fish:
                             tracker.sell_fish(self.grabbed.name)
+                        balance.balance.add_money(int(self.grabbed.sell))
                         self.grabbed = ''
                         player.text_cur = 'sold'
-                        balance.balance.add_money(10) # make varying prices later
                         return ''
             y = reso_p.win_height-(self.slot_size+self.gap)*3 # y cords
             for row_i, row in enumerate(self.inv):

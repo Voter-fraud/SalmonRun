@@ -1,6 +1,6 @@
-(Tool)=False, (Fish)=True, (Name)=fish
-(Tool)=False, (Fish)=True, (Name)=salmon
-(Tool)=False, (Fish)=True, (Name)=carp
-(Tool)=False, (Fish)=False, (Name)=worms
+(Tool)=False, (Fish)=True, (Name)=fish, (sell)=10
+(Tool)=False, (Fish)=True, (Name)=salmon, (sell)=12
+(Tool)=False, (Fish)=True, (Name)=carp, (sell)=10
+(Tool)=False, (Fish)=False, (Name)=worms, (sell)=2
 
 

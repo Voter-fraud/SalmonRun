@@ -5,8 +5,6 @@ from toolbox import load_asset, fun_box_check
 from reso_p import win
 import map_mod
 
-pygame.init()
-
 class Fish(pygame.sprite.Sprite):
     fish_types = {
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
@@ -108,19 +106,20 @@ class Fish(pygame.sprite.Sprite):
                         fish.ignore = 50  # makes the fish not be tricked by the bait for 500 ticks
 
     def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead):
+        bait = inventory.inventory.bait_slot
         if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
-            if not self.baited(player.hook_cords, inventory.inventory.bait_slot) and timer % 60 and self != Fish.fish_caught:
+            if not self.baited(player.hook_cords, bait) and timer % 60 and self != Fish.fish_caught:
                 # every second active fishes get a chance to swerve
                 self.fish_swerve()
             elif self == Fish.fish_caught and not Fish.fish_took:
                 # handles deciding when a circling fish grabs onto the hook
-                x = random.randrange(-300, 10)
+                x = random.randrange(-300, int(5*self.bait_dict(bait)))
                 if x > 0:
                     Fish.fish_took = self
                     inventory.inventory.use_bait()  # the fish ate the bait
             elif self == Fish.fish_caught and Fish.fish_took:
                 # handles deciding when a fish which grabbed onto the hook will run away
-                y = random.randrange(-490, 15)
+                y = random.randrange(-200, 15)
                 if y > 0 and game_state != 'minigame':
                     player.hook_cords = False
                     Fish.fish_took = False
