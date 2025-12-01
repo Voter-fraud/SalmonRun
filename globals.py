@@ -27,14 +27,14 @@ class Global:
     def upgrade_rod(cls):
         match cls.fishing_rods[cls.fishing_rod]:
             case 1:
-                fishing_rod = 'intermediate'
+                cls.fishing_rod = 'intermediate'
             case 1.2:
-                fishing_rod = 'advanced'
+                cls.fishing_rod = 'advanced'
             case 1.5:
                 print('This rod is already max level')
                 return False
             case _:
-                fishing_rod = 'starter'
+                cls.fishing_rod = 'starter'
                 print("invalid rod??? how tf")
         return True
 
