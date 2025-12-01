@@ -31,7 +31,7 @@ class ProgressBar(pygame.sprite.Sprite):
         self.color = color
         # these numbers are in percentages of the bar
         self.filled = 0.50
-        self.decays = 0.0003 # rate at which the bar decays
+        self.decays = 0.0005/Global.fishing_mod() # rate at which the bar decays
         self.cords = cords
         self.rect = self.image.get_rect(topleft=self.cords)
 
@@ -70,7 +70,7 @@ class OtherBar(pygame.sprite.Sprite):
         self.next_rang = 0.2
         #
         self.cur_spot = 0.0
-        self.move_rate = 0.0035
+        self.move_rate = 0.0045/Global.fishing_mod()
 
     @property
     def rect(self):
@@ -168,7 +168,7 @@ def hit():
     global cur_key, next_key, key_timer
     if hit_bar.can_click:
         # reset the hitbar with the new targets
-        bar.fill(0.15)
+        bar.fill(0.15*Global.fishing_mod())
         cur_key = next_key
         next_key = random_key()
         key_timer = 0
