@@ -3,9 +3,10 @@ import copy, Decor
 import fishing_quests
 import reso_p
 import Decor
-from config import  map_mod,  game_map
+from globals import Global
 import math, random, pygame
 from map_mod import win
+import map_mod
 from textM import text_box, textbox_font
 pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
@@ -107,7 +108,7 @@ class Camera():
             self.speed = 5
 
     def inspect(self):
-        for data_pair in map_mod.return_grids(corners=self.corners, g_map=game_map):
+        for data_pair in map_mod.return_grids(corners=self.corners, g_map=Global.game_map):
             if data_pair not in ('0', '1', '2', '3'):
                 if data_pair != 'f':
                     if cam.text_cur:
@@ -240,7 +241,7 @@ rescale_game()
 
 def generate_surface():
     pss = return_ps()
-    return map_mod.create_surface(game_map, pss[0], pss[1])
+    return map_mod.create_surface(Global.game_map, pss[0], pss[1])
 tile_map = generate_surface()
 
 def draw_ui():
@@ -285,7 +286,7 @@ def drawmap():
 
 def grid_ahead(cords, length, width):
     corners = return_corners(cords, length, width)
-    return map_mod.return_grids(corners, game_map)
+    return map_mod.return_grids(corners, Global.game_map)
 
 def handle_key_holds():
     if cam.can_move:
@@ -352,8 +353,8 @@ while True:
             if event.key == pygame.K_F5:
                 for sprite in map_mod.Block.block_list.sprites():
                     if sprite.type == 'water':
-                        sprite.update(game_map)
-                map_mod.Block.init_surface(game_map)
+                        sprite.update(Global.game_map)
+                map_mod.Block.init_surface(Global.game_map)
                 tile_map = map_mod.Block.update_surface()
                 for sprite in Decor.HighDecor.decor_sprites.sprites():
                     sprite.update()
@@ -394,7 +395,7 @@ while True:
                         x= random.randrange(0, 2)
                         sprite.image = cam.left_hold.image
 
-                map_mod.Block.init_surface(game_map)
+                map_mod.Block.init_surface(Global.game_map)
                 tile_map = map_mod.Block.update_surface()
             if event.button == 2:
                 pos_t = grab_pos()
