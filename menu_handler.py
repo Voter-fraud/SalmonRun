@@ -203,11 +203,29 @@ controls_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',
 
 market_menu = Menu(menu_backgrounds['market_menu'], 'market')
 worms_button = (load_asset('worms_button.png', 'menu', 'market_menu'), load_asset('worms_button.png', 'menu', 'market_menu'))
+plastic_bait_button = (load_asset('plastic_bait_button.png', 'menu', 'market_menu'), load_asset('plastic_bait_button.png', 'menu', 'market_menu'))
+insect_bait_button = (load_asset('insect_bait_button.png', 'menu', 'market_menu'), load_asset('insect_bait_button.png', 'menu', 'market_menu'))
+minnow_button = (load_asset('minnow_button.png', 'menu', 'market_menu'), load_asset('minnow_button.png', 'menu', 'market_menu'))
+
+rod_button = (load_asset('rod_button1.png', 'menu', 'market_menu'), load_asset('rod_button2.png', 'menu', 'market_menu'))
 
 from menu_functions import bait_buyer
 market_menu.create_toggle_button('worms', load_asset('market_sel.png', 'menu', 'market_menu'), worms_button,
                                  (238, 188),
                                  bait_buyer.worm_toggle, bait_buyer.r_upd)
+
+market_menu.create_toggle_button('plastic_bait', load_asset('market_sel.png', 'menu', 'market_menu'), plastic_bait_button,
+                                 (360, 188),
+                                 bait_buyer.plastic_bait_toggle, bait_buyer.r_upd)
+
+market_menu.create_toggle_button('insect_bait', load_asset('market_sel.png', 'menu', 'market_menu'), insect_bait_button,
+                                 (238, 248),
+                                 bait_buyer.insect_bait_toggle, bait_buyer.r_upd)
+
+market_menu.create_toggle_button('minnow', load_asset('market_sel.png', 'menu', 'market_menu'), minnow_button,
+                                 (360, 248),
+                                 bait_buyer.minnow_toggle, bait_buyer.r_upd)
+
 
 
 menu_dict = {

@@ -13,3 +13,12 @@ def r_upd():
 
 def worm_toggle():
     r_toggle(5, 'worms')
+
+def plastic_bait_toggle():
+    r_toggle(2, 'plastic_bait')
+
+def insect_bait_toggle():
+    r_toggle(4, 'insect_bait')
+
+def minnow_toggle():
+    r_toggle(12, 'minnow')
