@@ -6,7 +6,7 @@ pygame.init()
 class Global:
     """Namespace for global variables. DO NOT MAKE ANY INSTANCES"""
     def __new__(cls):
-        raise ZeroDivisionError("please do not create an instance (:")
+        raise ZeroDivisionError(" please do not create an instance >: ")
 
     scale = 1
     UI_scale = 1
@@ -40,3 +40,4 @@ class Global:
 
     # game_map is created in config
     game_map = ''
+

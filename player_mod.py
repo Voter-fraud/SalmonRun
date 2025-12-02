@@ -218,5 +218,7 @@ class PlayerSprite(pygame.sprite.Sprite):
             return True
         if player.text_cur:
             player.text_cur = False
+        return False
+
 
 player = PlayerSprite()

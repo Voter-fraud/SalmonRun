@@ -119,7 +119,7 @@ class Fish(pygame.sprite.Sprite):
                     inventory.inventory.use_bait()  # the fish ate the bait
             elif self == Fish.fish_caught and Fish.fish_took:
                 # handles deciding when a fish which grabbed onto the hook will run away
-                y = random.randrange(-200, 15)
+                y = random.randrange(-300, 15)
                 if y > 0 and game_state != 'minigame':
                     player.hook_cords = False
                     Fish.fish_took = False

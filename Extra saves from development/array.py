@@ -101,3 +101,24 @@ while True:
     win.blit(fish.image, center.cords)
     pygame.display.update()
 
+
+QuestSystem(1, False, player_tracker.fish_caught,
+            load_asset('catch fish.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 20), 'Catch 3 Fish'),
+
+QuestSystem(old_man, load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10), NPCs.old_man_seller),
+
+QuestSystem(1, False, player_tracker.fish_sold,
+            load_asset('sell fish.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 20), 'Sell 3 fish'),
+
+QuestSystem(old_man, load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10), NPCs.old_man_salmon),
+QuestSystem(1, 'salmon', player_tracker.fish_caught,
+            load_asset('catch fish.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 20), 'Catch 2 salmon'),
+
+QuestSystem(1, 'salmon', player_tracker.fish_sold,
+            load_asset('sell fish.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 20), 'Sell 3 fish'),

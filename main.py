@@ -1,6 +1,8 @@
 #initialisation
 import logging
 import fishing_quests
+from fishing_quests import QuestSystem
+from stat_tracker import player_tracker
 import reso_p
 import menu_handler
 
@@ -44,23 +46,7 @@ def init_main():
         Global.spritelist.add(decor)
     rescale_game()
 
-class StatTracker:
-    def __init__(self, linked_player):
-        self.player = linked_player
-        self.fish_caught = inventory.Item.ret_items('is_fish')
-        self.fish_sold = inventory.Item.ret_items('is_fish')
 
-    def catch_fish(self, fish_name):
-        self.fish_caught[fish_name] += 1
-        self.fish_caught['total'] += 1
-        if isinstance(cur_quest, fishing_quests.FishCatching):
-            cur_quest.update(player_tracker.fish_caught)
-
-    def sell_fish(self, fish_name):
-        self.fish_sold[fish_name] += 1
-        self.fish_sold['total'] += 1
-        if isinstance(cur_quest, fishing_quests.FishSelling):
-            cur_quest.update(player_tracker.fish_sold)
 
 class FishingRod:
     def __init__(self, use_anim, max_cast, lure):
@@ -70,24 +56,31 @@ class FishingRod:
 
 
 
-player_tracker = StatTracker(player)
 Global.spritelist.add(player)
 
+def blank_func(*args):
+    ''
 quests = [
 # start game with dialouge lines of the character wishing they could get a cool boat for fishing and leisure
-fishing_quests.TalkTo(old_man, load_asset('talk to.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 10), NPCs.old_man_linear1),
-fishing_quests.FishCatching(1, False, player_tracker.fish_caught, load_asset('catch fish.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 20), 'Catch 3 Fish'),
-fishing_quests.TalkTo(old_man, load_asset('talk to.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 10), NPCs.old_man_seller),
-fishing_quests.FishSelling(1, False, player_tracker.fish_sold, load_asset('sell fish.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 20), 'Sell 3 fish'),
-fishing_quests.TalkTo(old_man, load_asset('talk to.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 10), NPCs.old_man_salmon),
-fishing_quests.FishCatching(1, 'salmon', player_tracker.fish_caught, load_asset('catch fish.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 20), 'Catch 2 salmon'),
-fishing_quests.FishSelling(1, 'salmon', player_tracker.fish_sold, load_asset('sell fish.png', 'quest_imgs'), pygame.font.SysFont('Comic Sans MS', 20), 'Sell 3 fish'),
-]
+QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
+        load_asset('talk to.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Talk to {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial1'),
 
-cur_quest = quests[0]
+QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 3,
+        load_asset('catch fish.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Catch {1} fish", blank_func, blank_func, 'fish_catching1'),
+
+QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
+        load_asset('talk to.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Talk to {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial1'),
+]
+QuestSystem.quest_init(quests)
 
 def rescale_ui():
-    global text_box, textbox_font
+    global text_box, textbox_font # yes it is
     text_box = pygame.transform.scale(text_box, (510*Global.UI_scale, 70*Global.UI_scale))
     textbox_font = pygame.font.SysFont('Comic Sans MS', 20*Global.UI_scale)
     inventory.Inventory.rescale()
@@ -107,11 +100,11 @@ def generate_surface():
     return map_mod.tile_convert(Global.game_map)
 
 def draw_notifications():
-    if cur_quest.mode == 'start':
-        cur_quest.start(timer,  player_tracker.fish_caught)
-    elif cur_quest.mode == 'finish':
-        cur_quest.finish(timer)
-    elif not cur_quest.mode:
+    if QuestSystem.cur_quest().mode == 'start':
+        QuestSystem.cur_quest().start(timer)
+    elif QuestSystem.cur_quest().mode == 'finish':
+        QuestSystem.cur_quest().finish(timer)
+    elif not QuestSystem.cur_quest().mode:
         ''
 
 def draw_ui():
@@ -123,7 +116,7 @@ def draw_ui():
         win.blit(textbox_font.render(str(player.text_cur), False, (0, 0, 0)), ((reso_p.win_length-475*Global.UI_scale)/2, reso_p.win_height-65*Global.UI_scale))
     pos_p = (pos[0] + xp, pos[1] + yp)
     win.blit(small_font.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
-    cur_quest.draw(Global.UI_scale)
+    QuestSystem.cur_quest().draw(Global.UI_scale)
 
 def dynamic_drawing():
     """Draws inputted sprites in order of how high their Y cord is for example y=5 is drawn over y=4"""
@@ -189,9 +182,10 @@ def handle_events():
                 player.cast_length = 0
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_e:
-                if player.inspect(old_man, cur_quest):
-                    if player.text_cur:
-                        player.text_cur = False
+                if player.inspect(old_man, QuestSystem.cur_quest()):
+                    ''
+                elif player.text_cur:
+                    player.text_cur = False
                 else:
                     market_zone.check_interaction(player.rect)
             if event.key == pygame.K_ESCAPE:
@@ -288,11 +282,11 @@ while True:
     if timer > 9999:
         timer = 0
     if timer % 120 == 0:
-        if not cur_quest.live:
+        if not QuestSystem.cur_quest().live:
             quests.pop(0)
-            cur_quest = quests[0]
-            if isinstance(cur_quest, fishing_quests.TalkTo):
-                old_man.linear_list = cur_quest.newtext
+            QuestSystem.cur_quest_value = 0
+            if QuestSystem.cur_quest().ref_key == old_man.name:
+                old_man.linear_list = QuestSystem.cur_quest().newtext
                 old_man.status = 0
                 old_man.active = True
         FishSpawner.spawn_all(grid_ahead, inventory, Global.spritelist)
