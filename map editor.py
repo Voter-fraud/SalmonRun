@@ -70,7 +70,7 @@ class DecorSprite(pygame.sprite.Sprite):
     def rescale(self):
         self.image = pygame.transform.scale(self.image, (self.length*map_mod.scale, self.width*map_mod.scale))
 
-class Camera():
+class Camera:
     """Player character long term information"""
     @classmethod
     def __init__(self):
@@ -241,7 +241,9 @@ rescale_game()
 
 def generate_surface():
     pss = return_ps()
-    return map_mod.create_surface(Global.game_map, pss[0], pss[1])
+    map_mod.format_game_map('custom')
+    map_mod.Block.init_surface(Global.game_map)
+    return map_mod.Block.update_surface()
 tile_map = generate_surface()
 
 def draw_ui():
@@ -350,7 +352,7 @@ while True:
                     cam.text_cur = False
             if event.key == pygame.K_q:
                 cam.sprint_toggle()
-            if event.key == pygame.K_F5:
+            if event.key == pygame.K_F5 or event.key == pygame.K_j:
                 for sprite in map_mod.Block.block_list.sprites():
                     if sprite.type == 'water':
                         sprite.update(Global.game_map)
