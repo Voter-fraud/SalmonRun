@@ -8,7 +8,7 @@ import map_mod
 class Fish(pygame.sprite.Sprite):
     fish_types = {
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
-        'salmon': (2, 1, 0.4, 1, 5, 'salmon', False,
+        'salmon': (2, 1, 0.8, 1, 1.4, 'salmon', False,
                    { # baitlist
                         'worms': 1.3,
                         'plastic_bait': 1.1,
@@ -19,18 +19,18 @@ class Fish(pygame.sprite.Sprite):
                 ),
 
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
-        'maternal_salmon': (2, 2, 0.4, 1, 5, 'salmon', (50, 0, 1, 1),# rang, speed, min max
+        'maternal_salmon': (2, 2, 0.4, 1, 0.4, 'maternal_salmon', (50, 0, 1, 1),# rang, speed, min max
                             {  # baitlist
-                                'worms': 0.3,
-                                'plastic_bait': 0.2,
-                                'insect_bait': 0.3,
+                                'worms': 0.8,
+                                'plastic_bait': 0.7,
+                                'insect_bait': 0.8,
                                 'minnow': 1,
-                                'default': 0.2
+                                'default': 0.7
                             }
                         ),
 
 
-        'fish': (3, 3, 0.6, 1, 5, 'fish', False,
+        'fish': (3, 3, 0.6, 1, 1.2, 'fish', False,
                  {  # baitlist
                      'worms': 1.5,
                      'plastic_bait': 1.2,
@@ -40,46 +40,46 @@ class Fish(pygame.sprite.Sprite):
                  }
                  ),
 
-        'carp': (3, 2, 1, 1, 5, 'carp', False,
+        'carp': (3, 2, 0.4, 1, 1, 'carp', False,
                  {  # baitlist
                      'worms': 2,
                      'plastic_bait': 1.3,
                      'insect_bait': 1.7,
-                     'minnow': 0.3,
+                     'minnow': 1,
                      'default': 1.2
                  }
                  ),
 
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
-        'bass': (2, 2, 0.3, 1, 5, 'bass', False,
+        'bass': (2, 2, 0.6, 1, 1.6, 'bass', False,
                  {  # baitlist
-                     'worms': 1,
-                     'plastic_bait': 0.8,
-                     'insect_bait': 1.1,
-                     'minnow': 1.4,
-                     'default': 0.5
-                 }
-                 ),
-
-        # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
-        'present_fish': (4, 4, 2, 1, 5, 'present_fish', False,
-                 {  # baitlist
-                     'worms': 0.1,
+                     'worms': 1.5,
                      'plastic_bait': 1,
-                     'insect_bait': 0.1,
-                     'minnow': 0,
-                     'default': 0.1
+                     'insect_bait': 1.5,
+                     'minnow': 3,
+                     'default': 0.9
                  }
                  ),
 
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
-        'minnow': (4, 3, 1.2, 1, 5, 'minnow', (50, 0.8, 3, 5),# rang, speed, min, max,,
+        'present_fish': (4, 4, 2, 1, 2, 'present_fish', False,
+                 {  # baitlist
+                     'worms': 1.1,
+                     'plastic_bait': 1,
+                     'insect_bait': 1.1,
+                     'minnow': 1,
+                     'default': 1
+                 }
+                 ),
+
+        # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
+        'minnow': (4, 3, 0.5, 1, 0.7, 'minnow', (50, 0.6, 3, 5),# rang, speed, min, max,,
                          {  # baitlist
-                             'worms': 0,
-                             'plastic_bait': 1.5,
-                             'insect_bait': 1.5,
-                             'minnow': 0,
-                             'default': 0
+                             'worms': 2,
+                             'plastic_bait': 3,
+                             'insect_bait': 3,
+                             'minnow': 1,
+                             'default': 1
                          }
                          ),
     }
@@ -123,7 +123,6 @@ class Fish(pygame.sprite.Sprite):
     def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, spritelist, bait_dict, inventory):
         """creates a new fish instance in the fish_list sprite group"""
         new = Fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, bait_dict, inventory)
-        new.origin = cords #original fish position
         cls.fish_lists[item].add(new)
         spritelist.add(new)
         return new
@@ -160,7 +159,7 @@ class Fish(pygame.sprite.Sprite):
                 self.fish_swerve()
             elif self == Fish.fish_caught and not Fish.fish_took:
                 # handles deciding when a circling fish grabs onto the hook
-                x = random.randrange(-300, int(5*self.bait_dict(bait)))
+                x = random.randrange(-350, int(9*self.bait_dict(bait)))
                 if x > 0:
                     Fish.fish_took = self
                     inventory.inventory.use_bait()  # the fish ate the bait
@@ -189,8 +188,8 @@ class Fish(pygame.sprite.Sprite):
         self.cautiousness = cautiousness
         self.item = inventory.Item.new(item)
         self.side_length = 16
-        self.origin_bound = origin_bound
-        self.origin = (0, 0)
+        self.origin_bound = bool(origin_bound)
+        self.origin = origin_bound
         self.bait_dict_atr = bait_dict
 
 
@@ -240,6 +239,7 @@ class Fish(pygame.sprite.Sprite):
 
     def fish_move(self, grid_ahead):
         """Makes the fish instance move based on speed and direction instance properties"""
+        LocoLocka.move_swarms(grid_ahead)
         x = self.cords[0]
         y = self.cords[1]
         new_vector = self.vector
@@ -247,15 +247,33 @@ class Fish(pygame.sprite.Sprite):
         escape = 1
         while True:
             if self.origin_bound:
-                home_range = 50*map_mod.scale
+                home_range = self.origin.range*map_mod.scale
             else:
                 home_range = 9999999 * map_mod.scale
             if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale)),
-                16*map_mod.scale, 16*map_mod.scale)[-1] and \
-                home_range >= abs(self.origin[0]-(x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale)))+abs(self.origin[1]-(y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale))):
+                16*map_mod.scale, 16*map_mod.scale)[-1]:
+                if self.origin_bound:
+                    if home_range >= abs(self.origin.cords[0]-(x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale)))+abs(self.origin.cords[1]-(y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale))):
+                        self.cords = x + self.vector[0] * self.speed, y + self.vector[1] * self.speed
+                        return
+                    else:
+                        if 0 in self.vector:
+                            new_vector.reverse()
+                            if new_vector[0] == 0:
+                                new_vector[1] = ranlist[random.randrange(-1, 1)]
+                                new_vector[0] = 0
+                            else:
+                                new_vector[0] = ranlist[random.randrange(-1, 1)]
+                                new_vector[1] = 0
+                        self.vector = new_vector
+                    escape += 1
+                    if escape == 10:
+                        logging.warning('fish may be trapped')
+                        break
+                else:
                 # plus 20 is to keep the fish off of the sand
-                self.cords = x + self.vector[0]*self.speed, y + self.vector[1]*self.speed
-                return
+                    self.cords = x + self.vector[0]*self.speed, y + self.vector[1]*self.speed
+                    return
             else:
                 if 0 in self.vector:
                     new_vector.reverse()
@@ -340,18 +358,19 @@ class FishSpawner:
                     swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound, bait_dict = Fish.fish_types[key]
                     if origin_bound:
                         rang, swarm_speed, mini, maxi = origin_bound
-                        x = random.randrange(mini-1, maxi)
+                        x = random.randrange(mini, maxi+1)
                         if swarm_speed == 0:
-                            LocoLocka.create_nest_center(cords, rang)
+                            center = LocoLocka.create_nest_center(cords, rang)
                         else:
-                            LocoLocka.create_swarm_center(cords, rang, [0, 1], swarm_speed)
+                            center = LocoLocka.create_swarm_center(cords, rang, [0, 1], swarm_speed)
                         for x in range(0, x):
                             new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness,
-                                                   fishname, origin_bound, spritelist, bait_dict, inventory)
+                                                   fishname, center, spritelist, bait_dict, inventory)
+                            center.add_fish()
                         self.cur.add(new)
-                        return
-                    new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, origin_bound, spritelist, bait_dict, inventory)
-                    self.cur.add(new)
+                    else:
+                        new = Fish.create_fish(cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, False, spritelist, bait_dict, inventory)
+                        self.cur.add(new)
 
 
 class LocoLocka: # swarming or fish nesting behaviour
@@ -367,11 +386,16 @@ class LocoLocka: # swarming or fish nesting behaviour
         new_instance = LocoLocka(cords, rang, (0, 0), 0)
         return new_instance
 
+    @classmethod
+    def move_swarms(cls, grid_ahead):
+        for swarm in cls.swarms:
+            swarm.center_move(grid_ahead)
+
     def __init__(self, cords, rang, movement_vector, speed):
         self.cords = cords
         self.range = rang
         self.vector = movement_vector
-        self.speed = speed
+        self.speed = speed/120 # yikes
         self.fish_attached = 0
 
     def add_fish(self):
@@ -381,7 +405,6 @@ class LocoLocka: # swarming or fish nesting behaviour
         self.fish_attached -= 1
         if self.fish_attached <= 0: # remove this object to save memory.
             LocoLocka.swarms.remove(self)
-            LocoLocka.nests.remove(self)
             del self
 
     def center_move(self, grid_ahead):
@@ -414,18 +437,41 @@ class LocoLocka: # swarming or fish nesting behaviour
 
 
 FishSpawner.new([1500, 1191], {
-    'fish': 3,
-    'carp': 4,
+    'carp': 7,
     'salmon': 0,
 }, 3, 120)
 FishSpawner.new([1500, 1191], {
-    'fish': 2,
-    'carp': 4,
+    'minnow': 4,
+}, 3, 120)
+FishSpawner.new([1500, 1191], {
+    'carp': 6,
     'salmon': 0,
 }, 5, 500 )
+FishSpawner.new([1500, 1191], {
+    'minnow': 4,
+    'salmon': 0,
+}, 3, 500 )
+FishSpawner.new([1700, 1191], {
+'carp': 6,
+    'bass': 3,
+    'present_fish': 2,
+    'salmon': 0,
+}, 4, 500 )
 FishSpawner.new([1350, 775], {
     'fish': 0,
     'carp': 0,
     'salmon': 4,
-    'maternal_salmon': 4,
-}, 6, 75 )
+    'maternal_salmon': 3,
+}, 7, 75 )
+FishSpawner.new([250, 500], {
+    'present_fish': 5,
+}, 1, 50 )
+FishSpawner.new([750, 2300], {
+'carp': 6,
+    'bass': 5,
+    'present_fish': 2,
+    'minnow': 3,
+}, 5, 50 )
+FishSpawner.new([450, 900], {
+    'salmon': 3,
+}, 3, 50 )

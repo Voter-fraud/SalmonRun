@@ -31,7 +31,7 @@ class ProgressBar(pygame.sprite.Sprite):
         self.color = color
         # these numbers are in percentages of the bar
         self.filled = 0.50
-        self.decays = 0.0005/Global.fishing_mod() # rate at which the bar decays
+        self.decays = 0.0007/Global.fishing_mod() # rate at which the bar decays
         self.cords = cords
         self.rect = self.image.get_rect(topleft=self.cords)
 
@@ -40,8 +40,8 @@ class ProgressBar(pygame.sprite.Sprite):
         win.blit(self.image, self.cords)
         pygame.draw.rect(win, self.color, (self.cords[0]+2, self.cords[1]+2, self.rect.width*self.filled-4, self.rect.height-4))
 
-    def decay(self):
-        self.filled -= self.decays
+    def decay(self, fish_mod):
+        self.filled -= self.decays*fish_mod
 
     def fill(self, amount):
         self.filled += amount
@@ -70,7 +70,7 @@ class OtherBar(pygame.sprite.Sprite):
         self.next_rang = 0.2
         #
         self.cur_spot = 0.0
-        self.move_rate = 0.0045/Global.fishing_mod()
+        self.move_rate = 0.0075/Global.fishing_mod()
 
     @property
     def rect(self):
@@ -101,9 +101,11 @@ class OtherBar(pygame.sprite.Sprite):
         self.next_spot = x/100 # converts to percentages
         self.next_rang = i/100
 
-    def tick(self):
+    def tick(self, fish_mod):
         """Makes the hit_bar cur move forward and reset if it hits the end"""
-        self.cur_spot  += self.move_rate
+        if fish_mod < 1:
+            fish_mod = 1
+        self.cur_spot  += self.move_rate*fish_mod
         if self.cur_spot >= 1:
             # resets the bar if you run out of bar length.
             # does not reset the bar on every miss because I want you to feel punished by it time wise.
@@ -187,7 +189,7 @@ def reset():
     key_timer = 0
     hit_bar.new_run()
 
-def input_handler(event):
+def input_handler(event, fish_mod):
     """Handles all inputs when in the fishing minigame"""
     if event.type == pygame.QUIT:
         pygame.quit()
@@ -210,7 +212,7 @@ def input_handler(event):
                 else:
                     bar.fill(-0.01)
 
-def run(cords):
+def run(cords, fish_mod):
     """Runs one loop of the fishing minigame"""
     # the fishing minigame runs off of the maingames loop so it is limited to 60tps/fps
     hit_bar.cords = cords[0]-hit_bar.rect.width/3, cords[1]-hit_bar.rect.height-5
@@ -220,16 +222,16 @@ def run(cords):
     key_timer+=1
     if timer  >= 99999:
         timer = 0
-    bar.decay()
+    bar.decay(fish_mod)
 
     # moves onto the next key the player has to use.
-    if hit_bar.tick():
+    if hit_bar.tick(fish_mod):
         cur_key = next_key
         next_key = random_key()
         key_timer = 0
 
     for event in pygame.event.get():
-        input_handler(event)
+        input_handler(event, fish_mod)
     # draws minigame
     bar.draw()
     hit_bar.draw()

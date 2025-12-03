@@ -7,3 +7,4 @@
 (Tool)=False, (Fish)=True, (Name)=minnow, (sell)=10
 (Tool)=False, (Fish)=True, (Name)=bass, (sell)=30
 (Tool)=False, (Fish)=True, (Name)=present_fish, (sell)=50
+(Tool)=False, (Fish)=True, (Name)=maternal_salmon, (sell)=10

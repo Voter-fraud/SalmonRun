@@ -88,10 +88,13 @@ old_man_quest_dialouge = {
     "To catch a fish interested in your hook... ",
     "wait until bubbles form... ",
     "then press space again",
-    "Now go and catch 3 fishes"
+    "by pressing escape...",
+    "you can open up your menu",
+    "Check the controls page",
+    "Now go and catch a fish"
 ],
 'tutorial2' : [
-    'Nice job catching those fish',
+    'Nice job catching that fish',
     'To sell a fish go to the market...',
     'and drag the fish from your inventory...',
     'onto the market.',
@@ -99,14 +102,37 @@ old_man_quest_dialouge = {
 ],
 'tutorial3': [
     'There are many types of fish here',
-    'Catch and sell 2 salmon for me',
-    'Salmon can be found in the river above us.',
+    'Catch 3 salmon for me',
+    'Salmon can be found in the rivers.',
+    'Salmon move quickly and look like...',
+   " they know where they're going",
     ''
+],
+'tutorial4': [
+    'I have been trying to catch...',
+    'a specific fish for a while now...',
+    'but I just cant seem to find one.',
+    'Could you catch a bass for me?',
+    'They move relatively quickly...',
+    'but unlike salmon they make many turns.',
+    'They also like minnows as bait'
+],
+'tutorial5': [
+    'Thanks for your help.',
+    'That is everything I have planed.',
+    'Enjoy your time in salmon run!',
+],
+'tutorial6': [
+    'Thanks for your help.',
+    'That is everything I have planed.',
+    'Enjoy your time in salmon run!',
 ],
 }
 
 def old_man_quest_func(quest_name):
     old_man.linear_list = old_man_quest_dialouge[quest_name]
+    old_man.status = 0
+    old_man.active = True
 
 
 old_man_loop = ['Fishing takes my worries away', 'I could go for a beer right about now']

@@ -65,9 +65,9 @@ quests = [
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
         load_asset('talk to.png', 'quest_imgs'),
         pygame.font.SysFont('Comic Sans MS', 10),
-            F"Talk to {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial1'),
+            F"Talk to the old man", NPCs.old_man_quest_func, blank_func, 'tutorial1'),
 
-QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 3,
+QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 1,
         load_asset('catch fish.png', 'quest_imgs'),
         pygame.font.SysFont('Comic Sans MS', 10),
             F"Catch {1} fish", blank_func, blank_func, 'fish_catching1'),
@@ -75,7 +75,42 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 3,
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
         load_asset('talk to.png', 'quest_imgs'),
         pygame.font.SysFont('Comic Sans MS', 10),
-            F"Talk to {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial1'),
+            F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial2'),
+
+QuestSystem(player_tracker.fish_sold, "sell", 'total', 1,
+        load_asset('sell fish.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"sell {1} fish", blank_func, blank_func, 'fish_selling1'),
+
+QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
+        load_asset('talk to.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial3'),
+
+QuestSystem(player_tracker.fish_caught, "catch_fish", 'salmon', 3,
+        load_asset('catch fish.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Catch {3} salmon", blank_func, blank_func, 'fish_catching1'),
+
+QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
+        load_asset('talk to.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial4'),
+
+QuestSystem(player_tracker.fish_caught, "catch_fish", 'bass', 1,
+        load_asset('catch fish.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Catch {1} bass", blank_func, blank_func, 'fish_catching1'),
+
+QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
+        load_asset('talk to.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial5'),
+
+QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 999,
+        load_asset('catch fish.png', 'quest_imgs'),
+        pygame.font.SysFont('Comic Sans MS', 10),
+            F"Catch 9̶̪̥́̊9̵̔̒bass", blank_func, blank_func, 'fish_catching1'),
 ]
 QuestSystem.quest_init(quests)
 
@@ -285,10 +320,6 @@ while True:
         if not QuestSystem.cur_quest().live:
             quests.pop(0)
             QuestSystem.cur_quest_value = 0
-            if QuestSystem.cur_quest().ref_key == old_man.name:
-                old_man.linear_list = QuestSystem.cur_quest().newtext
-                old_man.status = 0
-                old_man.active = True
         FishSpawner.spawn_all(grid_ahead, inventory, Global.spritelist)
 
     #update fish then map
@@ -307,7 +338,8 @@ while True:
         handle_events()
 
     elif game_state == 'minigame':
-        if minigame.run((player.cords[0]-xp, player.cords[1]-yp)) == 'success':
+        state = minigame.run((player.cords[0]-xp, player.cords[1]-yp), Fish.fish_took.cautiousness)
+        if state == 'success':
             game_state = 'main'
             if player.hook_cords:
                 rod_pull_sound.play()
@@ -320,12 +352,12 @@ while True:
                 player.text_cur = "that's no fish!"
             player.stop_fishing(Fish)
             player.cast_length = 0
-        elif minigame.run((player.cords[0]-xp, player.cords[1]-yp)) == 'failure':
+        elif state == 'failure':
             game_state = 'main'
             if isinstance(hooked_fsh, Fish):
                 hooked_fsh.kill()
                 Fish.fish_caught.ignore = 10
-            player.stop_fishing()
+            player.stop_fishing(Fish)
             player.cast_length = 0
     pygame.display.update()
     player.update_can_move() # checks whether the player should be able to move or not
