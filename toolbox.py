@@ -17,7 +17,7 @@ def return_corners(cords, width, length):
 
 def load_asset(file, *directories):
     """Loads the chosen image file from the 'assets' folder. Directories entered go from highest to lowest level left to right."""
-    return pygame.image.load(os.path.join('assets', *directories, file))
+    return pygame.image.load(os.path.join('assets', *directories, file)).convert_alpha()
 
 def draw_line(start, end, color, surf, xp, yp, size):
     """Draws a line based on the inputs by drawing squares of the given size"""
