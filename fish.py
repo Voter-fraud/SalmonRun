@@ -73,7 +73,7 @@ class Fish(pygame.sprite.Sprite):
                  ),
 
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
-        'minnow': (4, 3, 0.5, 1, 0.7, 'minnow', (50, 0.6, 3, 5),# rang, speed, min, max,,
+        'minnow': (4, 3, 0.5, 1, 0.7, 'minnow', (50, 0.6, 2, 3),# rang, speed, min, max,,
                          {  # baitlist
                              'worms': 2,
                              'plastic_bait': 3,
@@ -442,11 +442,11 @@ FishSpawner.new([1500, 1191], {
 }, 3, 120)
 FishSpawner.new([1500, 1191], {
     'minnow': 4,
-}, 3, 120)
+}, 2, 120)
 FishSpawner.new([1500, 1191], {
     'carp': 6,
     'salmon': 0,
-}, 5, 500 )
+}, 4, 500 )
 FishSpawner.new([1500, 1191], {
     'minnow': 4,
     'salmon': 0,
@@ -462,7 +462,7 @@ FishSpawner.new([1350, 775], {
     'carp': 0,
     'salmon': 4,
     'maternal_salmon': 3,
-}, 7, 75 )
+}, 4, 75 )
 FishSpawner.new([250, 500], {
     'present_fish': 5,
 }, 1, 50 )
@@ -471,7 +471,7 @@ FishSpawner.new([750, 2300], {
     'bass': 5,
     'present_fish': 2,
     'minnow': 3,
-}, 5, 50 )
+}, 4, 50 )
 FishSpawner.new([450, 900], {
     'salmon': 3,
 }, 3, 50 )
