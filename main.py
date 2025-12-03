@@ -304,7 +304,9 @@ init_main()
 tile_map = generate_surface()
 game_state = 'main'
 Fish.rescale()
-Fish.update_fish(player, timer, inventory, game_state, grid_ahead)
+ps = player.xp_yp
+yp, xp =  ps[0], ps[1]
+Fish.update_fish(player, timer, inventory, game_state, grid_ahead, yp, xp)
 while True:
     sound_library.update_volume()
     pos = pygame.mouse.get_pos()
@@ -323,7 +325,7 @@ while True:
         FishSpawner.spawn_all(grid_ahead, inventory, Global.spritelist)
 
     #update fish then map
-    Fish.update_fish(player, timer, inventory, game_state, grid_ahead) # checks to see if a fish is on the hook. updates Fish.fish_caught
+    Fish.update_fish(player, timer, inventory, game_state, grid_ahead, yp, xp) # checks to see if a fish is on the hook. updates Fish.fish_caught
     hooked_fsh = Fish.fish_caught
     # Fish.rescale()
     player.update()

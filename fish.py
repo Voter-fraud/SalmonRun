@@ -128,12 +128,13 @@ class Fish(pygame.sprite.Sprite):
         return new
 
     @classmethod
-    def update_fish(cls, player, timer, inventory, game_state, grid_ahead):
+    def update_fish(cls, player, timer, inventory, game_state, grid_ahead, yp, xp):
         """Handles fish AI on a high level"""
         for species_list in cls.fish_lists.values():
             for fish in species_list:
-                fish.check_hook_collision(player.hook_cords)
-                fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead)
+                if -50<(fish.cords[0]-xp)<850 and -50<(fish.cords[1]-yp)<650:
+                    fish.check_hook_collision(player.hook_cords)
+                    fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead)
 
     @classmethod
     def scared_check(cls, player_hook_cords):
