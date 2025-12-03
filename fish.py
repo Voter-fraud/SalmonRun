@@ -134,7 +134,7 @@ class Fish(pygame.sprite.Sprite):
             for fish in species_list:
                 if -50<(fish.cords[0]-xp)<850 and -50<(fish.cords[1]-yp)<650:
                     fish.check_hook_collision(player.hook_cords)
-                    fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead)
+                    fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead, xp, yp)
 
     @classmethod
     def scared_check(cls, player_hook_cords):
@@ -152,7 +152,7 @@ class Fish(pygame.sprite.Sprite):
                         fish.vector.reverse()
                         fish.ignore = 50  # makes the fish not be tricked by the bait for 500 ticks
 
-    def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead):
+    def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead, xp, yp):
         bait = inventory.inventory.bait_slot
         if timer % 10 == 0:  # handles expensive operations such as swerving and baiting.
             if not self.baited(player.hook_cords, bait) and timer % 60 and self != Fish.fish_caught:
@@ -172,7 +172,7 @@ class Fish(pygame.sprite.Sprite):
                     Fish.fish_took = False
                     Fish.fish_caught = False
         if self != Fish.fish_caught:
-            self.fish_move(grid_ahead)
+            self.fish_move(grid_ahead, xp, yp)
 
     def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, bait_dict, inventory):
         super().__init__()
@@ -238,9 +238,9 @@ class Fish(pygame.sprite.Sprite):
             self.vector = new_vector
 
 
-    def fish_move(self, grid_ahead):
+    def fish_move(self, grid_ahead, xp, yp):
         """Makes the fish instance move based on speed and direction instance properties"""
-        LocoLocka.move_swarms(grid_ahead)
+        LocoLocka.move_swarms(grid_ahead, xp, yp)
         x = self.cords[0]
         y = self.cords[1]
         new_vector = self.vector
@@ -388,9 +388,10 @@ class LocoLocka: # swarming or fish nesting behaviour
         return new_instance
 
     @classmethod
-    def move_swarms(cls, grid_ahead):
+    def move_swarms(cls, grid_ahead, xp, yp):
         for swarm in cls.swarms:
-            swarm.center_move(grid_ahead)
+            if 0 < (swarm.cords[0] - xp) < 8 and 0 < (swarm.cords[1] - yp) < 600:
+                swarm.center_move(grid_ahead)
 
     def __init__(self, cords, rang, movement_vector, speed):
         self.cords = cords
