@@ -325,7 +325,7 @@ while True:
     #update fish then map
     Fish.update_fish(player, timer, inventory, game_state, grid_ahead) # checks to see if a fish is on the hook. updates Fish.fish_caught
     hooked_fsh = Fish.fish_caught
-    Fish.rescale()
+    # Fish.rescale()
     player.update()
     for decorr in Decor.HighDecor.decor_sprites.sprites():
         decorr.update()
