@@ -19,7 +19,7 @@ def cut_string(string, count):
 def return_corners(cords, width, length):
     """Returns the cords of all 4 corners of a sprite in a tuple. (the input should be the topleft cords). (output is more than 4 corners)"""
     rect = pygame.Rect(cords[0], cords[1], width, length)
-    return rect.center, rect.topleft, rect.topright, rect.bottomleft, rect.bottomright, rect.midleft, rect.midright, rect.midtop, rect.midbottom
+    return rect.center, rect.bottomleft, rect.bottomright, rect.midleft, rect.midright, rect.midbottom # not rect.midtop, rect.topleft, rect.topright,
 
 def load_asset(file, *directories):
     """Loads the chosen image file from the 'assets' folder. Directories entered go from highest to lowest level left to right."""

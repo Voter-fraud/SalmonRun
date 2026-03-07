@@ -1,5 +1,5 @@
 import pygame, random
-from reso_p import win
+from reso_p import win, ui_scale
 
 import config
 from globals import Global
@@ -138,21 +138,21 @@ def key_ref(inp, cords):
     """Returns the coordinates for a given key sprite"""
     match inp:
         case 'a':
-            return cords[0]-20, cords[1]-50
+            return cords[0]-ui_scale(20), cords[1]-ui_scale(50)
         case 's':
-            return cords[0], cords[1]-50
+            return cords[0], cords[1]-ui_scale(50)
         case 'd':
-            return cords[0]+20, cords[1]-50
+            return cords[0]+ui_scale(20), cords[1]-ui_scale(50)
         case _:
             print(F"Key reference error key: {inp} not a valid key")
-            return cords[0]-20, cords[1]-50 #Set the cords to key "a" as default
+            return cords[0]-ui_scale(20), cords[1]-ui_scale(50) #Set the cords to key "a" as default
 
 
 def draw_keys(cords):
     """Draws the different keys you can press"""
-    win.blit(a_key, (cords[0]-20, cords[1]-50))
-    win.blit(s_key, (cords[0], cords[1]-50))
-    win.blit(d_key, (cords[0]+20, cords[1]-50))
+    win.blit(a_key, (cords[0]-ui_scale(20), cords[1]-ui_scale(50)))
+    win.blit(s_key, (cords[0], cords[1]-ui_scale(50)))
+    win.blit(d_key, (cords[0]+ui_scale(20), cords[1]-ui_scale(50)))
     win.blit(n_key, key_ref(next_key, cords))
     win.blit(sel, key_ref(cur_key, cords))
 
