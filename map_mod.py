@@ -2,8 +2,10 @@
 it is a pretty independent module"""
 
 import math, os, pygame, random, logging
-from reso_p import win, scale
+from reso_p import win
 from toolbox import load_asset
+from globals import Global
+scale = Global.scale
 
 tile_size = 32*scale
 

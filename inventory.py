@@ -107,7 +107,7 @@ class Inventory:
         self.bait_slot = ''
         self.active = reso_p.win_height-110*Global.UI_scale, 110*Global.UI_scale # area in which inventory collisions are checked
         self.slot_size = 32 * Global.UI_scale
-        self.gap = 2
+        self.gap = 2*Global.UI_scale
 
     def draw(self, pos):
         """Draws the inventory, items in it, and the grabbed item"""

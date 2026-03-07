@@ -12,8 +12,8 @@ class Fish(pygame.sprite.Sprite):
                    { # baitlist
                         'worms': 1.3,
                         'plastic_bait': 1.1,
-                        'insect_bait': 1.3,
-                        'minnow': 2,
+                        'insect_bait': 1.2,
+                        'minnow': 1.5,
                         'default': 1.1
                    }
                 ),
@@ -42,10 +42,10 @@ class Fish(pygame.sprite.Sprite):
 
         'carp': (3, 2, 0.4, 1, 1, 'carp', False,
                  {  # baitlist
-                     'worms': 2,
-                     'plastic_bait': 1.3,
-                     'insect_bait': 1.7,
-                     'minnow': 1,
+                     'worms': 2.5,
+                     'plastic_bait': 1.5,
+                     'insect_bait': 1.8,
+                     'minnow': 0.8,
                      'default': 1.2
                  }
                  ),
@@ -53,10 +53,10 @@ class Fish(pygame.sprite.Sprite):
         # fishtype: (swerving, un_decisiveness, f_speed, f_id, cautiousness, fishname, nesting, baitlist)
         'bass': (2, 2, 0.6, 1, 1.6, 'bass', False,
                  {  # baitlist
-                     'worms': 1.5,
+                     'worms': 1.7,
                      'plastic_bait': 1,
-                     'insect_bait': 1.5,
-                     'minnow': 3,
+                     'insect_bait': 1.6,
+                     'minnow': 3.5,
                      'default': 0.9
                  }
                  ),
@@ -192,6 +192,7 @@ class Fish(pygame.sprite.Sprite):
         self.origin_bound = bool(origin_bound)
         self.origin = origin_bound
         self.bait_dict_atr = bait_dict
+        self.lazy_baited = False # holds the value as to whether or not a fish is being baited between checks.
 
 
     def bait_dict(self, bait):
@@ -246,16 +247,21 @@ class Fish(pygame.sprite.Sprite):
         new_vector = self.vector
         ranlist = (-1, 1)
         escape = 1
+        speed_mod = 1
+        if self.lazy_baited:
+            speed_mod = 1.5
+
+        if self.origin_bound:
+            home_range = self.origin.range * map_mod.scale
+        else:
+            home_range = 9999999 * map_mod.scale
+
         while True:
-            if self.origin_bound:
-                home_range = self.origin.range*map_mod.scale
-            else:
-                home_range = 9999999 * map_mod.scale
             if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale)),
                 16*map_mod.scale, 16*map_mod.scale)[-1]:
                 if self.origin_bound:
                     if home_range >= abs(self.origin.cords[0]-(x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale)))+abs(self.origin.cords[1]-(y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale))):
-                        self.cords = x + self.vector[0] * self.speed, y + self.vector[1] * self.speed
+                        self.cords = x + self.vector[0] * self.speed * speed_mod, y + self.vector[1]*speed_mod * self.speed
                         return
                     else:
                         if 0 in self.vector:
@@ -273,7 +279,7 @@ class Fish(pygame.sprite.Sprite):
                         break
                 else:
                 # plus 20 is to keep the fish off of the sand
-                    self.cords = x + self.vector[0]*self.speed, y + self.vector[1]*self.speed
+                    self.cords = x + self.vector[0]*self.speed*speed_mod, y + self.vector[1]*self.speed*speed_mod
                     return
             else:
                 if 0 in self.vector:
@@ -308,7 +314,9 @@ class Fish(pygame.sprite.Sprite):
                     ret = fun_box_check((self.cords[0], self.cords[1]), self.side_length, vector, 32 * map_mod.scale*self.bait_dict(inventory_bait_slot), player_hook_cords)
                     if ret:
                         self.vector = ret
+                        self.lazy_baited = True
                         return True
+        self.lazy_baited = False
 
     def __str__(self):
         return self.cords

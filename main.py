@@ -10,16 +10,16 @@ import Decor, minigame
 import map_mod
 import sound_library
 import toolbox
+from globals import Global
 
 from interactible_zone import market_zone
 
 import config # just to run config
-from globals import Global
 
 import balance
 
 from map_mod import win
-from toolbox import return_corners, load_asset
+from toolbox import return_corners, load_asset, blank_func
 from textM import text_box, textbox_font
 
 import inventory
@@ -32,8 +32,6 @@ import NPCs
 from player_mod import player, PlayerSprite
 
 from sound_library import *
-
-from reso_p import scale
 
 pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
@@ -58,8 +56,7 @@ class FishingRod:
 
 Global.spritelist.add(player)
 
-def blank_func(*args):
-    ''
+
 quests = [
 # start game with dialouge lines of the character wishing they could get a cool boat for fishing and leisure
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
@@ -114,9 +111,11 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 999,
 ]
 QuestSystem.quest_init(quests)
 
+text_box_dimensions = 510, 70
+
 def rescale_ui():
     global text_box, textbox_font # yes it is
-    text_box = pygame.transform.scale(text_box, (510*Global.UI_scale, 70*Global.UI_scale))
+    text_box = pygame.transform.scale(text_box, (text_box_dimensions[0]*Global.UI_scale, text_box_dimensions[1]*Global.UI_scale))
     textbox_font = pygame.font.SysFont('Comic Sans MS', 20*Global.UI_scale)
     inventory.Inventory.rescale()
     balance.balance.rescale()
@@ -316,7 +315,7 @@ while True:
     clock.tick(60)
     # timer
     timer += 1
-    if timer > 9999:
+    if timer > 9999: # check for bugs every now and then.
         timer = 0
     if timer % 120 == 0:
         if not QuestSystem.cur_quest().live:

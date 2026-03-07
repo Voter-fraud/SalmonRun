@@ -15,7 +15,7 @@ class InteractZone:
 
     @classmethod
     def create_zone(cls, name, topleft, width, length, interact_func):
-        """Creates a new zone object, adds it the class dict, and returns it."""
+        """Creates a new zone object, adds it to the class dict, and then returns it."""
         new_zone = cls(topleft, width, length, interact_func)
         cls.zone_list[name] = new_zone
         return new_zone

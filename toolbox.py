@@ -102,3 +102,8 @@ def fun_box_check(topleft, side_lengths, vectora, rang, check):
             return vectora
     return None
 
+def init_resc(scaler, const):
+    return scaler*const
+
+def blank_func(*args):
+    ''
