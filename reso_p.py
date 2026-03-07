@@ -6,6 +6,7 @@ Under no circumstances should ANY project specific modules be imported besides g
 
 import pygame
 from globals import Global
+from toolbox import init_resc
 
 pygame.init()
 def format_resolution(txt):
@@ -30,9 +31,15 @@ win_height = win_heightw
 win_mode = 'windowed' # currently no fullscreen because it is not super important
 win = pygame.display.set_mode((win_length, win_height))
 
-if win_heightw == 600: # sets entire game scale
+if win_heightw == 540: # sets entire game scale
     Global.scale = 2
     Global.UI_scale = 1
 else:
-    Global.scale = 3
-    Global.UI_scale = 1
+    Global.scale = 4
+    Global.UI_scale = 2
+
+def scale(base):
+    return base * Global.scale
+
+def ui_scale(base):
+    return base * Global.UI_scale

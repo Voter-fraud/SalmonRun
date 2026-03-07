@@ -1,8 +1,10 @@
 import logging, math
 import config
 import pygame, random
+
+import reso_p
 from toolbox import load_asset, fun_box_check
-from reso_p import win
+from reso_p import win, scale
 import map_mod
 
 class Fish(pygame.sprite.Sprite):
@@ -112,12 +114,12 @@ class Fish(pygame.sprite.Sprite):
     def rescale(cls):
         """Rescales fish images to current resolution"""
         for key, value in cls.fish_frames.items():
-            cls.fish_frames[key] = pygame.transform.scale(value, (16*map_mod.scale, 16*map_mod.scale))
+            cls.fish_frames[key] = pygame.transform.scale(value, (scale(16), scale(16)))
             for species_list in cls.fish_lists.values(): # 16 represents base side lengths
                 for fish in species_list:
                     fish.rect = fish.image.get_rect()
-                    fish.rect.height = 16 * map_mod.scale
-                    fish.rect.width = 16 * map_mod.scale
+                    fish.rect.height = scale(16)
+                    fish.rect.width = scale(16)
 
     @classmethod
     def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, spritelist, bait_dict, inventory):
@@ -132,14 +134,16 @@ class Fish(pygame.sprite.Sprite):
         """Handles fish AI on a high level"""
         for species_list in cls.fish_lists.values():
             for fish in species_list:
-                if -50<(fish.cords[0]-xp)<850 and -50<(fish.cords[1]-yp)<650:
+                if -scale(25 )<(fish.cords[0]-xp)<reso_p.win_length+scale(25) and -scale(25)<(fish.cords[1]-yp)<reso_p.win_height+scale(25): #if fish within render distance of player
+                    # I added short buffers of 25 scaled pixels so that fish slightly outside of the players render distance still move in order to make it less jarring
+                    #win length/height is already scaled
                     fish.check_hook_collision(player.hook_cords)
                     fish.complex_fish_movement(timer, player, inventory, game_state, grid_ahead, xp, yp)
 
     @classmethod
     def scared_check(cls, player_hook_cords):
         """scares fishes away from the hook when first cast"""
-        check_radius = 60 * map_mod.scale
+        check_radius = scale(60)
         if player_hook_cords:
             for species_list in cls.fish_lists.values():
                 for fish in species_list:
@@ -179,7 +183,7 @@ class Fish(pygame.sprite.Sprite):
         self.image = load_asset('fishleft1.png','fish scheiße') # change later to relate to a dict that matches fish type to image
         self.rect = self.image.get_rect() # creates rect for sprite class
         self.cords = (cords[0], cords[1]) #topleft cords of the fish
-        self.speed = f_speed*map_mod.scale
+        self.speed = scale(f_speed)
         self.swerving = swerving # measure of how unpredictable the fish is when it turns
         self.un_decisiveness = un_decisiveness # measure of how often a fish turns
         self.vector = [1, 0]

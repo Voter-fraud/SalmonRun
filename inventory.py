@@ -1,7 +1,7 @@
 import config
 from globals import Global
 
-from reso_p import win
+from reso_p import win, ui_scale, scale
 from toolbox import load_asset
 import copy, reso_p, Decor
 import pygame

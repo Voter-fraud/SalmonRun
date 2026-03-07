@@ -152,7 +152,7 @@ def draw_ui():
     win.blit(small_font.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
     QuestSystem.cur_quest().draw(Global.UI_scale)
 
-def dynamic_drawing():
+def dynamic_drawing(): # TO DO: make this o(n) time by only checking neighborhood and also make it so that I am not drawing everything
     """Draws inputted sprites in order of how high their Y cord is for example y=5 is drawn over y=4"""
     s_list = [] # becomes list of sprites to draw in order
     spritelist_copy = Global.spritelist.sprites().copy() # initial list of sprites
