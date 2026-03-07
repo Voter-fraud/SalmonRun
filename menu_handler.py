@@ -1,7 +1,8 @@
 import pygame
 
-from reso_p import win
-from toolbox import load_asset
+import reso_p
+from reso_p import win, scale, ui_scale
+from toolbox import load_asset, img_dim_lst
 from sound_library import Sound
 from textM import standard_comic
 import inventory
@@ -37,13 +38,19 @@ class Menu:
     class ToggleButton:
         def __init__(self, img_list, sel_img, name, cords, id):
             self.id = id
-            self.cords = cords
             self.name = name
-            self.img_list = img_list
+            self.img_list = list(img_list)
+            for place, image in enumerate(self.img_list):
+                self.img_list[place] = pygame.transform.scale(image, (ui_scale(image.get_rect().width), ui_scale(image.get_rect().height)))
+
             self.sel_img = sel_img
+            self.sel_img = pygame.transform.scale(self.sel_img, (ui_scale(self.sel_img.get_rect().width), ui_scale(self.sel_img.get_rect().height)))
+
             self.cur_img = 0
             self.length = len(img_list)
             self.type = 'toggle'
+            x_offset, y_offset = img_dim_lst(self.img_list)
+            self.cords = cords[0]-x_offset, cords[1]-y_offset
             self.rect = self.img_list[0].get_rect(topleft=self.cords)
 
         def draw(self, select):
@@ -54,12 +61,19 @@ class Menu:
     class TransferButton:
         def __init__(self, img, sel_img, name, cords, id, trans):
             self.id = id
-            self.cords = cords
             self.name = name
+
             self.img = img
+            self.img = pygame.transform.scale(self.img, (ui_scale(self.img.get_rect().width), ui_scale(self.img.get_rect().height)))
+
+
             self.sel_img = sel_img
+            self.sel_img = pygame.transform.scale(self.sel_img, (ui_scale(self.sel_img.get_rect().width), ui_scale(self.sel_img.get_rect().height)))
+
             self.trans = trans
             self.type = 'transfer'
+            x_offset, y_offset = img_dim_lst(self.img)
+            self.cords = cords[0]-x_offset, cords[1]-y_offset
             self.rect = self.img.get_rect(topleft=self.cords)
 
         def draw(self, select):
@@ -72,16 +86,22 @@ class Menu:
             menu_state = self.trans
 
     class Slider:
-        def __init__(self, img, sel_img, name, cords, txt_cords, txt_def, font, id):
+        def __init__(self, img, sel_img, name, cords, text_offset, txt_def, font, id):
+
             self.img = img
+            self.img = pygame.transform.scale(self.img, (ui_scale(self.img.get_rect().width), ui_scale(self.img.get_rect().height)))
+
             self.sel_img = sel_img
+            self.sel_img = pygame.transform.scale(self.sel_img, (ui_scale(self.sel_img.get_rect().width), ui_scale(self.sel_img.get_rect().height)))
+
             self.name = name
-            self.cords = cords
-            self.text_cords = txt_cords
             self.id = id
             self.text = txt_def
             self.font = font
             self.type = 'slider'
+            x_offset, y_offset = img_dim_lst(self.img)
+            self.cords = cords[0]-x_offset, cords[1]-y_offset
+            self.text_cords = cords[0]+text_offset[0], cords[1]+text_offset[1]
             self.rect= self.img.get_rect(topleft=self.cords)
 
         def draw(self, select):
@@ -108,8 +128,8 @@ class Menu:
         self.button_list.append(new_button)
         self.next_id += 1
 
-    def create_slider_button(self, img, sel_img, name, cords, text_cords, txt_def, font, update_func, prime_func):
-        new_button = self.Slider(img, sel_img, name, cords, text_cords, txt_def, font, self.next_id)
+    def create_slider_button(self, img, sel_img, name, cords, text_offset, txt_def, font, update_func, prime_func):
+        new_button = self.Slider(img, sel_img, name, cords, text_offset, txt_def, font, self.next_id)
         new_button.update = update_func
         new_button.clicked = prime_func
         self.button_list.append(new_button)
@@ -188,13 +208,17 @@ class Menu:
 
 main_menu = Menu(menu_backgrounds['good one'], 'main')
 
+x_middle = reso_p.win_length/2
+y_middle = reso_p.win_height/2
+uix_center = x_middle
+
 from menu_functions import resolution_toggle
-main_menu.create_toggle_button('resolution', sound_toggle[0], graphics_toggle, (350, 250), resolution_toggle.r_toggle, resolution_toggle.r_upd)
+main_menu.create_toggle_button('resolution', sound_toggle[0], graphics_toggle, (uix_center, y_middle-ui_scale(50)), resolution_toggle.r_toggle, resolution_toggle.r_upd)
 
 from menu_functions import sound_slider
-main_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350, 350), (430, 370),
+main_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (uix_center, y_middle+ui_scale(50)), (ui_scale(2), ui_scale(-20)),
                                 str(Sound.effects_volume), standard_comic, sound_slider.t_update, sound_slider.s_change)
-main_menu.create_transfer_button(controls_toggle, sound_trans[0], 'controls trans', (350, 450), 'controls') # controls (static screen)
+main_menu.create_transfer_button(controls_toggle, sound_trans[0], 'controls trans', (uix_center, y_middle+ui_scale(150)), 'controls') # controls (static screen)
 
 controls_menu = Menu(menu_backgrounds['controls'], 'controls')
 controls_menu.create_slider_button(sound_slid[1], sound_slid[0], 'sound slider',  (350000, 450), (30000, 470),

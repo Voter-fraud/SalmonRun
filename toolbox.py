@@ -2,6 +2,12 @@
 anything project specific. Functions listed in here should be well commented and explain any assumptions in the docstring"""
 
 import pygame, os
+def img_dim_lst(image):
+    """Returns the half the dimensions of a singular image or of the first in a list of images. Returns: (Length, width)"""
+    if isinstance(image, list) or isinstance(image, tuple):
+        return image[0].get_rect().width/2, image[0].get_rect().height/2
+    return image.get_rect().width/2, image.get_rect().height/2
+
 def cut_string(string, count):
     """removes the first x digits of a string and then returns the new string back"""
     list_string = list(string)
