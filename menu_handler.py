@@ -31,6 +31,7 @@ class Menu:
     def __init__(self, bkg_img, menu_name):
         self.name = menu_name
         self.background = bkg_img
+        self.background = pygame.transform.scale(self.background, (ui_scale(self.background.get_rect().width), ui_scale(self.background.get_rect().height)))
         self.next_id = 0
         self.select = 0
         self.button_list = []
@@ -235,19 +236,19 @@ rod_button = (load_asset('rod_button1.png', 'menu', 'market_menu'), load_asset('
 
 from menu_functions import bait_buyer
 market_menu.create_toggle_button('worms', load_asset('market_sel.png', 'menu', 'market_menu'), worms_button,
-                                 (238, 188),
+                                 (scale(139), scale(104)),
                                  bait_buyer.worm_toggle, bait_buyer.r_upd)
 
 market_menu.create_toggle_button('plastic_bait', load_asset('market_sel.png', 'menu', 'market_menu'), plastic_bait_button,
-                                 (360, 188),
+                                 (scale(200), scale(104)),
                                  bait_buyer.plastic_bait_toggle, bait_buyer.r_upd)
 
 market_menu.create_toggle_button('insect_bait', load_asset('market_sel.png', 'menu', 'market_menu'), insect_bait_button,
-                                 (238, 248),
+                                 (scale(139), scale(134)),
                                  bait_buyer.insect_bait_toggle, bait_buyer.r_upd)
 
 market_menu.create_toggle_button('minnow', load_asset('market_sel.png', 'menu', 'market_menu'), minnow_button,
-                                 (360, 248),
+                                 (scale(200), scale(134)),
                                  bait_buyer.minnow_toggle, bait_buyer.r_upd)
 
 

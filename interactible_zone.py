@@ -1,5 +1,6 @@
 import pygame
 import menu_handler
+from reso_p import scale
 
 """
 I want to make these zones very simple and easy to add mini functions into. 
@@ -29,4 +30,4 @@ class InteractZone:
         if self.rect.colliderect(check_rect):
             self.run()
 
-market_zone = InteractZone.create_zone('market_zone', (3660, 2245), 200, 300, market_func)
+market_zone = InteractZone.create_zone('market_zone', (scale(1830), scale(1122)), scale(100), scale(150), market_func)
