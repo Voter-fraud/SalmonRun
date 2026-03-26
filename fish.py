@@ -117,9 +117,8 @@ class Fish(pygame.sprite.Sprite):
             cls.fish_frames[key] = pygame.transform.scale(value, (scale(16), scale(16)))
             for species_list in cls.fish_lists.values(): # 16 represents base side lengths
                 for fish in species_list:
+                    fish.image = pygame.transform.scale(load_asset('fishleft1.png','fish scheiße'), (scale(16), scale(16)))
                     fish.rect = fish.image.get_rect()
-                    fish.rect.height = scale(16)
-                    fish.rect.width = scale(16)
 
     @classmethod
     def create_fish(cls, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, spritelist, bait_dict, inventory):
@@ -154,7 +153,7 @@ class Fish(pygame.sprite.Sprite):
                     e_dif = math.sqrt(expx * expx + expy * expy)  # checks if you are moving away or towards the hook
                     if dif <= check_radius and dif < e_dif:  # if within a circle within radius 64 and the fish is moving towards you turn it around
                         fish.vector.reverse()
-                        fish.ignore = 50  # makes the fish not be tricked by the bait for 500 ticks
+                        fish.ignore = 10  # makes the fish not be tricked by the bait for 100 ticks
 
     def complex_fish_movement(self, timer, player, inventory, game_state, grid_ahead, xp, yp):
         bait = inventory.inventory.bait_slot
@@ -180,7 +179,7 @@ class Fish(pygame.sprite.Sprite):
 
     def __init__(self, cords, swerving, un_decisiveness, f_speed, f_id, cautiousness, item, origin_bound, bait_dict, inventory):
         super().__init__()
-        self.image = load_asset('fishleft1.png','fish scheiße') # change later to relate to a dict that matches fish type to image
+        self.image = pygame.transform.scale(load_asset('fishleft1.png','fish scheiße'), (scale(16), scale(16)))
         self.rect = self.image.get_rect() # creates rect for sprite class
         self.cords = (cords[0], cords[1]) #topleft cords of the fish
         self.speed = scale(f_speed)
@@ -255,16 +254,16 @@ class Fish(pygame.sprite.Sprite):
         if self.lazy_baited:
             speed_mod = 1.5
 
-        if self.origin_bound:
+        if self.origin_bound and not self.lazy_baited:
             home_range = self.origin.range * map_mod.scale
         else:
             home_range = 9999999 * map_mod.scale
-
+        unknown = 5 # keeps fish more off sand if higher
         while True:
-            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale)),
+            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(unknown*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(unknown*self.vector[1]*map_mod.scale)),
                 16*map_mod.scale, 16*map_mod.scale)[-1]:
                 if self.origin_bound:
-                    if home_range >= abs(self.origin.cords[0]-(x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale)))+abs(self.origin.cords[1]-(y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale))):
+                    if home_range >= abs(self.origin.cords[0]-(x+self.vector[0]*self.speed+(unknown*self.vector[0]*map_mod.scale)))+abs(self.origin.cords[1]-(y+self.vector[1]*self.speed+(unknown*self.vector[1]*map_mod.scale))):
                         self.cords = x + self.vector[0] * self.speed * speed_mod, y + self.vector[1]*speed_mod * self.speed
                         return
                     else:
@@ -282,7 +281,6 @@ class Fish(pygame.sprite.Sprite):
                         logging.warning('fish may be trapped')
                         break
                 else:
-                # plus 20 is to keep the fish off of the sand
                     self.cords = x + self.vector[0]*self.speed*speed_mod, y + self.vector[1]*self.speed*speed_mod
                     return
             else:

@@ -1,4 +1,65 @@
 #initialisation
+"""Fishing game scope
+
+The fishing should be based on washington fishing.
+
+-character customization? (deeply optional)
+
+-2d world where you can walk around. The world should consist of: walkable tiles, fishable tiles, transfer tiles, interactable tiles.
+
+-A couple of npcs should exist but they are very hollow and are just interactable tiles that spit information,
+
+-fishing should be an actually fun minigame.
+
+-There should be different fish for different areas.
+
+-Start with 15 fish.
+-Salmon (made)
+-deep sea sable fish
+-angler fish
+-trout
+-tuna
+-hawk fish
+-banded angel fish
+-emporer angel fish
+-bicolor angel fish
+-jellyfish
+-eel
+-trash
+-treasure
+-masked rabbitfish
+-parrotfish
+-gift fish
+-reindeer fish
+
+-fish pokedex (optional)
+
+-fish capture and display
+
+-fish cooking
+
+-atleast 4 areas probably under 10 total
+
+-unlockable areas?
+(mellow lake start)
+(quick river)
+(player house)
+(close ocean boating)
+(commercial shop)
+(reef boating)
+(deep sea boating)
+(side plot house 1)
+(dream world house)
+(dream world fishing)
+
+-starting areas should be self-sufficient with a place to fish and sell them.
+
+-Maybe it depicts a rural town in a country turning bad. Pollution could be a good example of this. Once you get to sea fishing it could slowly get worse and worse. Eventually the game ending with the character putting down their fishing rod. You could also use a  anolouge to pollution. This could be anything from prions to Cthulu. It also sets up a sequel where you try to reclaim the water. It should also be christmas themed. There could be 2 endings one where you overfish and overstress too try and get a present for your family. The family would be sorta happy the lake would be depressed. In another you just gift the best fish you can instead and all eat it together. Since you did not overfish for money flying fish flow across the sky and stuff so it is happy. There could also be 2 other endings one were you overfish but don’t get the present instead keeping the money for yourself and everything really sucks. And then the best ending where you steal the gift/convince the seller to give it to you without overfishing or even by just making enough money non commercial fishing like with maybe a special type of rod that gives alot of treasure.
+
+The game should have a mode where it only takes 10-20m.
+
+It could be some sort of a magical world where at the end some fish manage to survive.
+"""
 import logging
 import fishing_quests
 from fishing_quests import QuestSystem
