@@ -90,6 +90,7 @@ def format_decor(doc):
 
 def store_decor(doc):
     file = open(doc, 'w')
+    file.truncate(0)
     for decor in HighDecor.decor_sprites.sprites():
         file.write(F'HighDecor,{decor.name},{decor.original[0]},{decor.original[1]},{decor.length},{decor.width}\r')
     for decor in LowDecor.decor_sprites.sprites():

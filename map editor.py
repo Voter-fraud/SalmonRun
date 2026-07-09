@@ -20,6 +20,12 @@ spritelist = pygame.sprite.Group()
 for sprite in Decor.HighDecor.decor_sprites.sprites():
     spritelist.add(sprite)
 
+def init_main():
+    """Adds all high decorations into the game and then rescales everything"""
+    for decor in Decor.HighDecor.decor_sprites.sprites():
+        Global.spritelist.add(decor)
+    rescale_game()
+
 def save_game_info(length):
     file = open('custom_map.txt', 'w')  # w means write
     tilelisttemp = map_mod.Block.block_list.sprites()
@@ -241,10 +247,7 @@ rescale_game()
 
 def generate_surface():
     pss = return_ps()
-    map_mod.format_game_map('custom')
-    map_mod.Block.init_surface(Global.game_map)
-    return map_mod.Block.update_surface()
-tile_map = generate_surface()
+    return map_mod.tile_convert(Global.game_map)
 
 def draw_ui():
     small_font = pygame.font.SysFont('Comic Sans MS', 10)
@@ -321,6 +324,8 @@ decor_types = {
 'duck': 'high',
 }
 rescale_game()
+init_main()
+tile_map = generate_surface()
 
 while True:
     pos = pygame.mouse.get_pos()
@@ -353,6 +358,7 @@ while True:
             if event.key == pygame.K_q:
                 cam.sprint_toggle()
             if event.key == pygame.K_F5 or event.key == pygame.K_j:
+                #updates how each water block looks
                 for sprite in map_mod.Block.block_list.sprites():
                     if sprite.type == 'water':
                         sprite.update(Global.game_map)
@@ -365,6 +371,7 @@ while True:
                 rescale_game()
 
             if event.key == pygame.K_F7:
+                #saves the game
                 save_game_info(80)
                 Decor.store_decor('Decor positions.txt')
             #decor sprites
