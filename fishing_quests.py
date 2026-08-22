@@ -15,6 +15,7 @@ class QuestSystem:
     cur_quest_value = 0
     quest_list = ['']
 
+    """begins a set of linear quests"""
     @classmethod
     def quest_init(cls, questlist):
         cls.quest_list = questlist
@@ -34,7 +35,7 @@ class QuestSystem:
         self.image = pygame.transform.scale(img, (128*Global.UI_scale, 48*Global.UI_scale))
         self.font = font
         self.name = id
-        self.reference = reference
+        self.reference = reference # the stat tracker used for referencing progress
 
 
         self.finish_text = 'Quest Completed!'
@@ -44,16 +45,21 @@ class QuestSystem:
 
         self.noti_font = pygame.font.SysFont('Comic Sans MS', 35 * map_mod.scale)
         self.cur_text = 0
-        self.overtime = 0
+        self.holdtime = 0
         self.mode = 'start'
         self.live = True
 
     def update(self, reference):
         print(self.start_value)
         if reference[self.ref_key]-self.start_value[self.ref_key] >= self.goal:
-            self.mode = 'finish'
+            if self.mode != 'finish':
+                self.reset()
+                self.mode = 'finish'
         else:
             self.cur = reference[self.ref_key]-self.start_value[self.ref_key]
+
+    def reset(self):
+        self.holdtime, self.cur_text = 0, 0
 
     def draw(self, ui_scale):
         win.blit(base, (reso_p.win_length-130*ui_scale, 90*ui_scale))
@@ -63,11 +69,11 @@ class QuestSystem:
     def start(self, timer):
         self.start_func(self.name)
         self.start_value = copy.copy(self.reference) # updates the start value to when the quest is run
-        if self.cur_text == len(self.start_text):
-            self.overtime += 1
-            if self.overtime >= 100:
+        if self.cur_text == len(self.start_text): #checks to see if notification is displayed fully
+            self.holdtime += 1 # holds the fully displayed message for a little while
+            if self.holdtime >= 100:
                 self.mode = False
-                self.overtime, self.cur_text = 0, 0
+                self.holdtime, self.cur_text = 0, 0
         text = self.noti_font.render(F'{cut_string(self.start_text, self.cur_text)}', False, (0, 0, 0))
         text_box = text.get_rect(center=(reso_p.win_length/2, reso_p.win_height/4))
         win.blit(text, text_box.topleft)
@@ -77,11 +83,13 @@ class QuestSystem:
     def finish(self, timer):
         self.end_func(self.name)
         if self.cur_text == len(self.finish_text):
-            self.overtime += 1
-            if self.overtime >= 100:
+            self.holdtime += 1
+            if self.holdtime >= 100:
                 self.mode = False
                 self.live = False
-                self.overtime, self.cur_text = 0, 0
+                self.holdtime, self.cur_text = 0, 0
+        print(self.finish_text)
+        print(self.cur_text)
         text = self.noti_font.render(F'{cut_string(self.finish_text, self.cur_text)}', False, (0, 0, 0))
         text_box = text.get_rect(center=(reso_p.win_length/2, reso_p.win_height/4))
         win.blit(text, text_box.topleft)

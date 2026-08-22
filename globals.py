@@ -38,6 +38,7 @@ class Global:
                 print("invalid rod??? how tf")
         return True
 
+
     # game_map is created in config
     game_map = ''
 

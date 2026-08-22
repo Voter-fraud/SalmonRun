@@ -62,6 +62,7 @@ It could be some sort of a magical world where at the end some fish manage to su
 """
 import logging
 import fishing_quests
+import textM
 from fishing_quests import QuestSystem
 from stat_tracker import player_tracker
 import reso_p
@@ -81,7 +82,8 @@ import balance
 
 from map_mod import win
 from toolbox import return_corners, load_asset, blank_func
-from textM import text_box, textbox_font
+from textM import textbox_font
+from text_box import Textbox
 
 import inventory
 
@@ -105,19 +107,10 @@ def init_main():
         Global.spritelist.add(decor)
     rescale_game()
 
-
-
-class FishingRod:
-    def __init__(self, use_anim, max_cast, lure):
-        self.frames = use_anim
-        self.max_cast = max_cast
-        self.lure = lure
-
-
-
 Global.spritelist.add(player)
 
-
+# quests are all initialized upon loading the game. They should not take up
+# any processing power while the game is running. (besides the active quest)
 quests = [
 # start game with dialouge lines of the character wishing they could get a cool boat for fishing and leisure
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
@@ -170,17 +163,19 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 999,
         pygame.font.SysFont('Comic Sans MS', 10),
             F"Catch 9̶̪̥́̊9̵̔̒bass", blank_func, blank_func, 'fish_catching1'),
 ]
-QuestSystem.quest_init(quests)
 
-text_box_dimensions = 510, 70
+QuestSystem.quest_init(quests) # starts the tutorial quests
 
+"""Rescales all UI_scale based elements"""
 def rescale_ui():
-    global text_box, textbox_font # yes it is
-    text_box = pygame.transform.scale(text_box, (text_box_dimensions[0]*Global.UI_scale, text_box_dimensions[1]*Global.UI_scale))
+    global text_box, textbox_font # yes it is lol wtf
+    text_box = pygame.transform.scale(text_box, (Global.text_box_dimensions()))
     textbox_font = pygame.font.SysFont('Comic Sans MS', 20*Global.UI_scale)
     inventory.Inventory.rescale()
     balance.balance.rescale()
+    # dialouge box is defined already rescaled
 
+"""Rescales all game scale based elements"""
 def rescale_game():
     rescale_ui()
     for sprite in Global.spritelist.sprites():
@@ -190,10 +185,11 @@ def rescale_game():
         sprite.rescale()
     player.rescale_player()
 
+"""Returns full map surface to draw"""
 def generate_surface():
-    pss = player.xp_yp
     return map_mod.tile_convert(Global.game_map)
 
+"""Draws out quest notifications"""
 def draw_notifications():
     if QuestSystem.cur_quest().mode == 'start':
         QuestSystem.cur_quest().start(timer)
@@ -202,15 +198,13 @@ def draw_notifications():
     elif not QuestSystem.cur_quest().mode:
         ''
 
+"""Draws all UI elements"""
 def draw_ui():
     balance.balance.draw()
     inventory.inventory.draw(pos)
-    small_font = pygame.font.SysFont('Comic Sans MS', 10)
-    if player.text_cur: # draws sprite inspection dialog
-        win.blit(text_box, ((reso_p.win_length-510*Global.UI_scale)/2, reso_p.win_height-80*Global.UI_scale))
-        win.blit(textbox_font.render(str(player.text_cur), False, (0, 0, 0)), ((reso_p.win_length-475*Global.UI_scale)/2, reso_p.win_height-65*Global.UI_scale))
+    Textbox.dialouge.draw()
     pos_p = (pos[0] + xp, pos[1] + yp)
-    win.blit(small_font.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
+    win.blit(textM.small_comic.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
     QuestSystem.cur_quest().draw(Global.UI_scale)
 
 def dynamic_drawing(): # TO DO: make this o(n) time by only checking neighborhood and also make it so that I am not drawing everything
