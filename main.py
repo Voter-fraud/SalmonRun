@@ -78,7 +78,8 @@ from ui_modules import balance, inventory, menu_handler
 from setup.map_mod import win
 from toolbox import return_corners, load_asset, blank_func
 
-from entity_classes.fish import Fish, FishSpawner
+from entity_classes.fish import Fish
+from entity_classes.fish_spawner import FishSpawner
 
 from entity_classes.NPCs import old_man
 from entity_classes import NPCs

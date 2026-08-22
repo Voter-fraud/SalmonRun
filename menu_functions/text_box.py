@@ -16,8 +16,9 @@ class Textbox(pygame.sprite.Sprite):
                            base_dimensions[1]*Global.UI_scale)
 
     def draw(self):
-        win.blit(self.image, ((reso_p.win_length - self.dimensions[0]) / 2, reso_p.win_height - self.dimensions[1]))
-        win.blit(textM.textbox_font.render(str(player.text_cur), False, (0, 0, 0)),
-                 ((reso_p.win_length - 470 * Global.UI_scale) / 2, reso_p.win_height - 55 * Global.UI_scale))
+        if player.text_cur:
+            win.blit(self.image, ((reso_p.win_length - self.dimensions[0]) / 2, reso_p.win_height - self.dimensions[1]))
+            win.blit(textM.textbox_font.render(str(player.text_cur), False, (0, 0, 0)),
+                     ((reso_p.win_length - 470 * Global.UI_scale) / 2, reso_p.win_height - 55 * Global.UI_scale))
 
 textbox = Textbox((510, 70))
