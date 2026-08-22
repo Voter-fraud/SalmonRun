@@ -1,6 +1,7 @@
-import map_mod, pygame, os
-from reso_p import win
-from toolbox import load_asset
+import pygame
+from setup import map_mod
+from setup.reso_p import win
+from toolbox import load_asset, from_saves
 
 class HighDecor(pygame.sprite.Sprite):
     decor_sprites = pygame.sprite.Group()
@@ -15,7 +16,7 @@ class HighDecor(pygame.sprite.Sprite):
         super().__init__()
         self.image = image
         self.original = int(cords[0]), int(cords[1])
-        self.cords = int(cords[0])*map_mod.scale, int(cords[1])*map_mod.scale
+        self.cords = int(cords[0]) * map_mod.scale, int(cords[1]) * map_mod.scale
         self.length = int(length)
         self.width = int(width)
         self.rect = self.image.get_rect(topleft=self.cords)
@@ -28,7 +29,7 @@ class HighDecor(pygame.sprite.Sprite):
     def draw(self, xp, yp):
         win.blit(self.image, (self.cords[0]-xp, self.cords[1]-yp))
     def rescale(self):
-        self.image = pygame.transform.scale(self.image, (self.length*map_mod.scale, self.width*map_mod.scale))
+        self.image = pygame.transform.scale(self.image, (self.length * map_mod.scale, self.width * map_mod.scale))
 
 class LowDecor(pygame.sprite.Sprite):
     decor_sprites = pygame.sprite.Group()
@@ -43,7 +44,7 @@ class LowDecor(pygame.sprite.Sprite):
         super().__init__()
         self.image = image
         self.original = int(cords[0]), int(cords[1])
-        self.cords = int(cords[0])*map_mod.scale, int(cords[1])*map_mod.scale
+        self.cords = int(cords[0]) * map_mod.scale, int(cords[1]) * map_mod.scale
         self.length = int(length)
         self.width = int(width)
         self.rect = self.image.get_rect(topleft=self.cords)
@@ -57,7 +58,7 @@ class LowDecor(pygame.sprite.Sprite):
         win.blit(self.image, (self.cords[0]-xp, self.cords[1]-yp))
 
     def rescale(self):
-        self.image = pygame.transform.scale(self.image, (self.length*map_mod.scale, self.width*map_mod.scale))
+        self.image = pygame.transform.scale(self.image, (self.length * map_mod.scale, self.width * map_mod.scale))
 
 
 decor_imgs = {
@@ -98,7 +99,7 @@ def store_decor(doc):
     file.close()
 
 def init_decor():
-    format_decor('Decor positions.txt')
+    format_decor(from_saves('Decor positions.txt'))
 
     
 init_decor()

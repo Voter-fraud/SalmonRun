@@ -111,5 +111,8 @@ def fun_box_check(topleft, side_lengths, vectora, rang, check):
 def init_resc(scaler, const):
     return scaler*const
 
+def from_saves(file, *directories):
+    return os.path.join("saves", *directories, file)
+
 def blank_func(*args):
     ''

@@ -1,16 +1,22 @@
+"""
+This module contains the balance class and its instance. Only one instance should be used currently.
+
+This module is secondary level
+"""
+
 import pygame
 from toolbox import load_asset
-import reso_p
-from reso_p import win, scale, ui_scale
-from globals import Global
+from setup import reso_p
+from setup.reso_p import win, ui_scale
 
 
 class Balance:
+    """"""
     def __init__(self, bal, game_long_balance):
         self.image = load_asset('coin_counter.png')
-        self.f_cords = (reso_p.win_length-ui_scale(73), ui_scale(34))
+        self.f_cords = (reso_p.win_length - ui_scale(73), ui_scale(34))
         self.color = (0, 0, 0)
-        self.cords = (reso_p.win_length-ui_scale(110), ui_scale(32))
+        self.cords = (reso_p.win_length - ui_scale(110), ui_scale(32))
         self.bal = bal
         self.total = game_long_balance
         self.font = pygame.font.SysFont('Comic Sans MS', 30)  # this is only one font size

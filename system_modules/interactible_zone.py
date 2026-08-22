@@ -1,6 +1,6 @@
 import pygame
-import menu_handler
-from reso_p import scale
+from ui_modules import menu_handler
+from setup.reso_p import scale
 
 """
 I want to make these zones very simple and easy to add mini functions into. 

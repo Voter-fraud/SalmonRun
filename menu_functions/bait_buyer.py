@@ -4,8 +4,8 @@ This module defines several functions for use in bait buying buttons.
 It is a tertiary level module and imports of it should be handled with care.
 """
 
-import balance
-import inventory
+from ui_modules import balance, inventory
+
 
 def buy(cost, item):
     """Buys a bait item, used exclusively locally"""

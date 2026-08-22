@@ -1,10 +1,9 @@
 import pygame
-import map_mod
-import fishing_quests
-import stat_tracker
-from reso_p import win
-import config
-from globals import Global
+from setup import map_mod
+from system_modules import stat_tracker
+from setup.reso_p import win
+from setup.globals import Global
+from toolbox import load_asset
 
 
 class Conversible(pygame.sprite.Sprite):
@@ -28,8 +27,8 @@ class Conversible(pygame.sprite.Sprite):
     @classmethod
     def rescale(cls):
         for rescalible in cls.talkables:
-            rescalible.image = pygame.transform.scale(rescalible.image, (rescalible.width*map_mod.scale, rescalible.height*map_mod.scale))
-            rescalible.big_box = rescalible.big_box[0]*map_mod.scale, rescalible.big_box[1]*map_mod.scale
+            rescalible.image = pygame.transform.scale(rescalible.image, (rescalible.width * map_mod.scale, rescalible.height * map_mod.scale))
+            rescalible.big_box = rescalible.big_box[0] * map_mod.scale, rescalible.big_box[1] * map_mod.scale
 
     def __init__(self, name, img, loop_list, cords, converse_box, width, height):
         super().__init__()
@@ -39,7 +38,7 @@ class Conversible(pygame.sprite.Sprite):
         self.name = name
         self.status = 0
         self.active = True
-        self.cords = (cords[0]*map_mod.scale/2, cords[1]*map_mod.scale/2)
+        self.cords = (cords[0] * map_mod.scale / 2, cords[1] * map_mod.scale / 2)
         self.rect = self.image.get_rect(topleft=self.cords)
         self.width = width
         self.height = height
@@ -136,5 +135,5 @@ def old_man_quest_func(quest_name):
 
 
 old_man_loop = ['Fishing takes my worries away', 'I could go for a beer right about now']
-old_man_img = pygame.image.load('old_man_placehold.png')
+old_man_img = load_asset("old_man_placehold.png")
 old_man = Conversible.new('old_man', old_man_img, old_man_loop, (3093.0, 2054.0), (64, 64), False, 24, 36)

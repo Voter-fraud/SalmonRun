@@ -1,10 +1,10 @@
 """map_mod this module is for interacting with the game map. Only reso_p should reasonably be imported here.
 it is a pretty independent module"""
 
-import math, os, pygame, random, logging
-from reso_p import win
-from toolbox import load_asset
-from globals import Global
+import math, pygame, random, logging
+from setup.reso_p import win
+from toolbox import load_asset, from_saves
+from setup.globals import Global
 scale = Global.scale
 
 tile_size = 32*scale
@@ -15,8 +15,8 @@ water_tile = load_asset('center_water.png', 'tileset')
 
 map_dict = {
     # contains all relevant map files. this would be useful for creating loaded areas like player housing or an island
-    'test': open('game_map.txt', 'r').readlines(),
-    'custom': open('custom_map.txt', 'r').readlines()
+    'test': open(from_saves("game_map.txt"), 'r').readlines(),
+    'custom': open(from_saves("custom_map.txt"), 'r').readlines()
 }
 
 class Block(pygame.sprite.Sprite):

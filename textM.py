@@ -1,6 +1,5 @@
 import pygame
-from toolbox import load_asset
-from globals import Global
+from setup.globals import Global
 
 pygame.init()
 small_comic = pygame.font.SysFont('Comic Sans MS', 10*Global.UI_scale)  # this is only one font size

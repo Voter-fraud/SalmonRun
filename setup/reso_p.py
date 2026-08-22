@@ -5,8 +5,8 @@ Under no circumstances should ANY project specific modules be imported besides g
 
 
 import pygame
-from globals import Global
-from toolbox import init_resc
+from setup.globals import Global
+from toolbox import from_saves
 
 pygame.init()
 def format_resolution(txt):
@@ -22,7 +22,7 @@ def format_resolution(txt):
     return x
 
 
-res = format_resolution('Reso.txt')
+res = format_resolution(from_saves('Reso.txt'))
 win_lengthw = int(res[0]) # windowed
 win_heightw = int(res[1])
 

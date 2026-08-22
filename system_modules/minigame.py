@@ -1,8 +1,7 @@
 import pygame, random
-from reso_p import win, ui_scale
+from setup.reso_p import win, ui_scale
 
-import config
-from globals import Global
+from setup.globals import Global
 
 from toolbox import load_asset
 clock = pygame.time.Clock()

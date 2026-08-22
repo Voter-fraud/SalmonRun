@@ -4,7 +4,8 @@ This module defines functions for use by the resolution toggle button
 It is a secondary level module.
 """
 
-import reso_p
+from setup import reso_p
+
 
 def r_toggle():
     """Switches between resolutions and saves the result, this function is used as the toggle function for the resolution button,"""

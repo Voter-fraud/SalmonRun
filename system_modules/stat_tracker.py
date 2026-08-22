@@ -1,6 +1,5 @@
-import inventory
-import fishing_quests
-from fishing_quests import QuestSystem
+from ui_modules import inventory
+from system_modules.fishing_quests import QuestSystem
 
 class StatTracker:
     def __init__(self):

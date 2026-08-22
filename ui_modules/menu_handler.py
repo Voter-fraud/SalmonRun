@@ -1,11 +1,10 @@
 import pygame
 
-import reso_p
-from reso_p import win, scale, ui_scale
+from setup import reso_p
+from setup.reso_p import win, scale, ui_scale
 from toolbox import load_asset, img_dim_lst
 from sound_library import Sound
 from textM import standard_comic
-import inventory
 
 # global variables
 clock = pygame.time.Clock()
@@ -209,8 +208,8 @@ class Menu:
 
 main_menu = Menu(menu_backgrounds['good one'], 'main')
 
-x_middle = reso_p.win_length/2
-y_middle = reso_p.win_height/2
+x_middle = reso_p.win_length / 2
+y_middle = reso_p.win_height / 2
 uix_center = x_middle
 
 from menu_functions import resolution_toggle

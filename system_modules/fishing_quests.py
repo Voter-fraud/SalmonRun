@@ -1,10 +1,8 @@
-
-import config
-from globals import Global
+from setup.globals import Global
 
 from toolbox import cut_string, load_asset
-from reso_p import win
-import reso_p, map_mod
+from setup.reso_p import win
+from setup import map_mod, reso_p
 import pygame, copy
 pygame.init()
 
@@ -62,9 +60,10 @@ class QuestSystem:
         self.holdtime, self.cur_text = 0, 0
 
     def draw(self, ui_scale):
-        win.blit(base, (reso_p.win_length-130*ui_scale, 90*ui_scale))
-        win.blit(self.image, (reso_p.win_length-130*ui_scale, 90*ui_scale))
-        win.blit(self.font.render(F'{self.cur}/{self.goal}', False, (0, 0, 0)), (reso_p.win_length-85*ui_scale, 110*ui_scale))
+        win.blit(base, (reso_p.win_length - 130 * ui_scale, 90 * ui_scale))
+        win.blit(self.image, (reso_p.win_length - 130 * ui_scale, 90 * ui_scale))
+        win.blit(self.font.render(F'{self.cur}/{self.goal}', False, (0, 0, 0)), (
+        reso_p.win_length - 85 * ui_scale, 110 * ui_scale))
 
     def start(self, timer):
         self.start_func(self.name)
@@ -75,7 +74,7 @@ class QuestSystem:
                 self.mode = False
                 self.holdtime, self.cur_text = 0, 0
         text = self.noti_font.render(F'{cut_string(self.start_text, self.cur_text)}', False, (0, 0, 0))
-        text_box = text.get_rect(center=(reso_p.win_length/2, reso_p.win_height/4))
+        text_box = text.get_rect(center=(reso_p.win_length / 2, reso_p.win_height / 4))
         win.blit(text, text_box.topleft)
         if timer % 10 == 0 and self.cur_text < len(self.start_text):
             self.cur_text += 1
@@ -91,7 +90,7 @@ class QuestSystem:
         print(self.finish_text)
         print(self.cur_text)
         text = self.noti_font.render(F'{cut_string(self.finish_text, self.cur_text)}', False, (0, 0, 0))
-        text_box = text.get_rect(center=(reso_p.win_length/2, reso_p.win_height/4))
+        text_box = text.get_rect(center=(reso_p.win_length / 2, reso_p.win_height / 4))
         win.blit(text, text_box.topleft)
         if timer % 10 == 0 and self.cur_text < len(self.finish_text):
             self.cur_text += 1

@@ -3,14 +3,12 @@ import pygame, math, copy, logging
 from toolbox import load_asset, return_corners
 import toolbox
 
-from map_mod import scale
-import map_mod
+from setup.map_mod import scale
+from setup import map_mod, reso_p
 
-import reso_p
-from reso_p import win
+from setup.reso_p import win
 
-import config
-from globals import Global
+from setup.globals import Global
 
 from sound_library import rod_cast_sound
 
@@ -91,7 +89,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.rect = PlayerSprite.still['up'].get_rect(topleft=self.cords)
         self.walking = False
         self.walking_frame = 0
-        self.boot_cords = [reso_p.win_length / 2, reso_p.win_height / 2-self.height/4]
+        self.boot_cords = [reso_p.win_length / 2, reso_p.win_height / 2 - self.height / 4]
         self.noclip = False
 
     @property

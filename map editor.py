@@ -1,19 +1,17 @@
 #initialisation
-import copy, Decor
-import fishing_quests
-import reso_p
+import copy
 import Decor
-from globals import Global
+from setup.globals import Global
 import math, random, pygame
-from map_mod import win
-import map_mod
-from textM import text_box, textbox_font
+from setup.map_mod import win
+from setup import map_mod, reso_p
+from toolbox import from_saves
 pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
 UI_scale = 2
 #file loading
 pygame.init()
-Decor.format_decor('Decor positions.txt')
+Decor.format_decor(from_saves('Decor positions.txt'))
 
 spritelist = pygame.sprite.Group()
 
@@ -27,7 +25,7 @@ def init_main():
     rescale_game()
 
 def save_game_info(length):
-    file = open('custom_map.txt', 'w')  # w means write
+    file = open('saves/custom_map.txt', 'w')  # w means write
     tilelisttemp = map_mod.Block.block_list.sprites()
     tilelist = []
     for c in range(0, length):
@@ -62,7 +60,7 @@ class DecorSprite(pygame.sprite.Sprite):
     def __init__(self, image, cords, length, width):
         super().__init__()
         self.image = image
-        self.cords = cords[0]*map_mod.scale, cords[1]*map_mod.scale
+        self.cords = cords[0] * map_mod.scale, cords[1] * map_mod.scale
         self.length = length
         self.width = width
         self.rect = self.image.get_rect(topleft=self.cords)
@@ -74,19 +72,19 @@ class DecorSprite(pygame.sprite.Sprite):
         win.blit(self.image, (self.cords[0]-xp, self.cords[1]-yp))
 
     def rescale(self):
-        self.image = pygame.transform.scale(self.image, (self.length*map_mod.scale, self.width*map_mod.scale))
+        self.image = pygame.transform.scale(self.image, (self.length * map_mod.scale, self.width * map_mod.scale))
 
 class Camera:
     """Player character long term information"""
     @classmethod
     def __init__(self):
-        self.cords = [1800*map_mod.scale, 1200*map_mod.scale] # top left
+        self.cords = [1800 * map_mod.scale, 1200 * map_mod.scale] # top left
         self.text_cur = False
         self.speed = 5
         self.can_move = True
         self.other_hold = False
-        self.width = 16*map_mod.scale
-        self.height = 32*map_mod.scale
+        self.width = 16 * map_mod.scale
+        self.height = 32 * map_mod.scale
         self.walking = False
         self.left_hold = 'grass'
         self.right_hold = Decor.LowDecor(Decor.decor_imgs['fern'], (0, 0), 32, 32, 'fern')
@@ -153,8 +151,8 @@ class Conversible(pygame.sprite.Sprite):
     @classmethod
     def rescale(cls):
         for sprite in cls.talkables:
-            sprite.image = pygame.transform.scale(sprite.image, (sprite.width*map_mod.scale, sprite.height*map_mod.scale))
-            sprite.big_box = sprite.big_box[0]*map_mod.scale, sprite.big_box[1]*map_mod.scale
+            sprite.image = pygame.transform.scale(sprite.image, (sprite.width * map_mod.scale, sprite.height * map_mod.scale))
+            sprite.big_box = sprite.big_box[0] * map_mod.scale, sprite.big_box[1] * map_mod.scale
 
     def __init__(self, name, img, linear_list, loop_list, cords, converse_box, width, height):
         super().__init__()
@@ -164,7 +162,7 @@ class Conversible(pygame.sprite.Sprite):
         self.name = name
         self.status = 0
         self.active = True
-        self.cords = (cords[0]*map_mod.scale/2, cords[1]*map_mod.scale/2)
+        self.cords = (cords[0] * map_mod.scale / 2, cords[1] * map_mod.scale / 2)
         self.rect = self.image.get_rect(topleft=self.cords)
         self.width = width
         self.height = height
@@ -211,7 +209,7 @@ old_man_linear = [
     'those bastards would drink the oceans dry if they could',
 ]
 old_man_loop = ['Fishing takes my worries away', 'I could go for a beer right about now']
-old_man_img = pygame.image.load('old_man_placehold.png')
+old_man_img = pygame.image.load('assets/old_man_placehold.png')
 old_man = Conversible.new('old_man', old_man_img, old_man_linear, old_man_loop, (3093.0, 2054.0), (64, 64), False, 24, 36)
 
 
@@ -252,7 +250,7 @@ def generate_surface():
 def draw_ui():
     small_font = pygame.font.SysFont('Comic Sans MS', 10)
     if cam.text_cur: # draws sprite inspection dialog
-        win.blit(text_box, ((reso_p.win_length-510*UI_scale)/2, reso_p.win_height-80*UI_scale))
+        win.blit(text_box, ((reso_p.win_length - 510 * UI_scale) / 2, reso_p.win_height - 80 * UI_scale))
         win.blit(textbox_font.render(str(cam.text_cur), False, (0, 0, 0)), ((reso_p.win_length - 475 * UI_scale) / 2, reso_p.win_height - 65 * UI_scale))
     pos_p = (pos[0] + xp, pos[1] + yp)
     win.blit(small_font.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
@@ -408,7 +406,7 @@ while True:
                 tile_map = map_mod.Block.update_surface()
             if event.button == 2:
                 pos_t = grab_pos()
-                pos2 = math.floor(pos_t[0]/map_mod.scale), math.floor(pos_t[1]/map_mod.scale)
+                pos2 = math.floor(pos_t[0] / map_mod.scale), math.floor(pos_t[1] / map_mod.scale)
                 if isinstance(cam.right_hold, Decor.HighDecor):
                     new = Decor.HighDecor.create_sprite(cam.right_hold.image, pos2, cam.right_hold.length, cam.right_hold.width, cam.right_hold.name)
                     spritelist.add(new)

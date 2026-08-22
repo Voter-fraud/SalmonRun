@@ -1,11 +1,10 @@
 import logging, math
-import config
 import pygame, random
 
-import reso_p
 from toolbox import load_asset, fun_box_check
-from reso_p import win, scale
-import map_mod
+from setup.reso_p import win, scale
+from setup import map_mod, reso_p
+
 
 class Fish(pygame.sprite.Sprite):
     fish_types = {
@@ -133,7 +132,7 @@ class Fish(pygame.sprite.Sprite):
         """Handles fish AI on a high level"""
         for species_list in cls.fish_lists.values():
             for fish in species_list:
-                if -scale(25 )<(fish.cords[0]-xp)<reso_p.win_length+scale(25) and -scale(25)<(fish.cords[1]-yp)<reso_p.win_height+scale(25): #if fish within render distance of player
+                if -scale(25 )<(fish.cords[0]-xp)< reso_p.win_length+scale(25) and -scale(25)<(fish.cords[1] - yp)< reso_p.win_height+scale(25): #if fish within render distance of player
                     # I added short buffers of 25 scaled pixels so that fish slightly outside of the players render distance still move in order to make it less jarring
                     #win length/height is already scaled
                     fish.check_hook_collision(player.hook_cords)
@@ -260,10 +259,10 @@ class Fish(pygame.sprite.Sprite):
             home_range = 9999999 * map_mod.scale
         unknown = 5 # keeps fish more off sand if higher
         while True:
-            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(unknown*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(unknown*self.vector[1]*map_mod.scale)),
-                16*map_mod.scale, 16*map_mod.scale)[-1]:
+            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(unknown * self.vector[0] * map_mod.scale), y + self.vector[1] * self.speed + (unknown * self.vector[1] * map_mod.scale)),
+                                 16 * map_mod.scale, 16 * map_mod.scale)[-1]:
                 if self.origin_bound:
-                    if home_range >= abs(self.origin.cords[0]-(x+self.vector[0]*self.speed+(unknown*self.vector[0]*map_mod.scale)))+abs(self.origin.cords[1]-(y+self.vector[1]*self.speed+(unknown*self.vector[1]*map_mod.scale))):
+                    if home_range >= abs(self.origin.cords[0]-(x+self.vector[0]*self.speed+(unknown * self.vector[0] * map_mod.scale)))+abs(self.origin.cords[1] - (y + self.vector[1] * self.speed + (unknown * self.vector[1] * map_mod.scale))):
                         self.cords = x + self.vector[0] * self.speed * speed_mod, y + self.vector[1]*speed_mod * self.speed
                         return
                     else:
@@ -313,7 +312,7 @@ class Fish(pygame.sprite.Sprite):
                 # return False
             for vector in ([0, -1], [0, 1], [1, 0], [-1, 0]):
                 if vector != [self.vector[0]*-1, self.vector[1]*-1]: # does not check back of fish
-                    ret = fun_box_check((self.cords[0], self.cords[1]), self.side_length, vector, 32 * map_mod.scale*self.bait_dict(inventory_bait_slot), player_hook_cords)
+                    ret = fun_box_check((self.cords[0], self.cords[1]), self.side_length, vector, 32 * map_mod.scale * self.bait_dict(inventory_bait_slot), player_hook_cords)
                     if ret:
                         self.vector = ret
                         self.lazy_baited = True
@@ -353,15 +352,15 @@ class FishSpawner:
         self.spwn_list = special_dict
         self.cap = cap
         self.cur = pygame.sprite.Group()
-        self.range = rang*map_mod.scale # range is half a square length. Not using circles because I have no real reason to
+        self.range = rang * map_mod.scale # range is half a square length. Not using circles because I have no real reason to
 
     def spawn(self, grid_ahead, inventory, spritelist):
         if  len(self.cur.sprites()) < self.cap:
             cords =0,0
             run = True
             while run:
-                cords = [self.cords[0]*map_mod.scale+random.randrange(-self.range, self.range), self.cords[1]*map_mod.scale+random.randrange(-self.range, self.range)]
-                if 'f' in grid_ahead(cords,  16*map_mod.scale, 16*map_mod.scale):
+                cords = [self.cords[0] * map_mod.scale + random.randrange(-self.range, self.range), self.cords[1] * map_mod.scale + random.randrange(-self.range, self.range)]
+                if 'f' in grid_ahead(cords, 16 * map_mod.scale, 16 * map_mod.scale):
                     run = False
             r = random.randrange(0, self.tot)
             for key, value in self.spwn_list.items():
@@ -427,8 +426,8 @@ class LocoLocka: # swarming or fish nesting behaviour
         ranlist = (-1, 1)
         escape = 1
         while True:
-            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10*self.vector[0]*map_mod.scale), y+self.vector[1]*self.speed+(10*self.vector[1]*map_mod.scale)),
-                16*map_mod.scale, 16*map_mod.scale)[-1]:
+            if 'f' == grid_ahead((x+self.vector[0]*self.speed+(10 * self.vector[0] * map_mod.scale), y + self.vector[1] * self.speed + (10 * self.vector[1] * map_mod.scale)),
+                                 16 * map_mod.scale, 16 * map_mod.scale)[-1]:
                 # plus 20 is to keep the swarm  off of the sand
                 self.cords = x + self.vector[0]*self.speed, y + self.vector[1]*self.speed
                 return

@@ -1,9 +1,9 @@
-import config
-from globals import Global
+from setup.globals import Global
 
-from reso_p import win, ui_scale, scale
-from toolbox import load_asset
-import copy, reso_p, Decor
+from setup.reso_p import win
+from toolbox import load_asset, from_saves
+import copy, Decor
+from setup import reso_p
 import pygame
 class Item:
     items = {
@@ -83,7 +83,7 @@ def import_item_list(file):
     return item
 
 # this code configures the item list
-for i in import_item_list('item.txt'):
+for i in import_item_list(from_saves("item.txt")):
     item_from_str(i)
 
 class Inventory:
@@ -93,7 +93,7 @@ class Inventory:
         """Rescales the inventory based on UI_scale"""
         inventory.inventory_slot = pygame.transform.scale(inventory.inventory_slot, (32 * Global.UI_scale, 32 * Global.UI_scale))
         inventory.highlight = pygame.transform.scale(inventory.highlight, (32*Global.UI_scale, 32*Global.UI_scale))
-        inventory.active = reso_p.win_height-110*Global.UI_scale, 110*Global.UI_scale
+        inventory.active = reso_p.win_height - 110 * Global.UI_scale, 110 * Global.UI_scale
 
     def __init__(self):
         self.inventory_slot = load_asset('inventory_slot.png', 'items')
@@ -105,13 +105,13 @@ class Inventory:
         self.highlight = load_asset('inv_select.png', 'items')
         self.grabbed = '' # What you are currently holding
         self.bait_slot = ''
-        self.active = reso_p.win_height-110*Global.UI_scale, 110*Global.UI_scale # area in which inventory collisions are checked
+        self.active = reso_p.win_height - 110 * Global.UI_scale, 110 * Global.UI_scale # area in which inventory collisions are checked
         self.slot_size = 32 * Global.UI_scale
         self.gap = 2*Global.UI_scale
 
     def draw(self, pos):
         """Draws the inventory, items in it, and the grabbed item"""
-        y = reso_p.win_height-(self.slot_size+self.gap)*3 # starting y value. we draw left to right top to bottom.
+        y = reso_p.win_height - (self.slot_size + self.gap) * 3 # starting y value. we draw left to right top to bottom.
         for row in self.inv:
             x = self.gap # starting x value
             for slot in row:
@@ -139,7 +139,7 @@ class Inventory:
     def click(self, pos):
         """Handles clicking when related to the inventory. (grabs items to move)"""
         # this function is only called when a click is in the self.active zone
-        y = reso_p.win_height-(self.slot_size+self.gap)*3 # y cords
+        y = reso_p.win_height - (self.slot_size + self.gap) * 3 # y cords
         for row_i, row in enumerate(self.inv):
             x = self.gap # x cords
             for slot_i, slot in enumerate(row):
@@ -166,7 +166,7 @@ class Inventory:
                         self.grabbed = ''
                         player.text_cur = 'sold'
                         return ''
-            y = reso_p.win_height-(self.slot_size+self.gap)*3 # y cords
+            y = reso_p.win_height - (self.slot_size + self.gap) * 3 # y cords
             for row_i, row in enumerate(self.inv):
                 x = self.gap  # x cords
                 for slot_i, slot in enumerate(row):

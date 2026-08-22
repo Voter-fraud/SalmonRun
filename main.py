@@ -61,43 +61,38 @@ The game should have a mode where it only takes 10-20m.
 It could be some sort of a magical world where at the end some fish manage to survive.
 """
 import logging
-import fishing_quests
 import textM
-from fishing_quests import QuestSystem
-from stat_tracker import player_tracker
-import reso_p
-import menu_handler
+from system_modules.fishing_quests import QuestSystem
+from system_modules.stat_tracker import player_tracker
 
-import Decor, minigame
-import map_mod
+import Decor
+from system_modules import minigame
+from setup import map_mod
 import sound_library
-import toolbox
-from globals import Global
+from setup.globals import Global
 
-from interactible_zone import market_zone
+from system_modules.interactible_zone import market_zone
 
-import config # just to run config
+from ui_modules import balance, inventory, menu_handler
 
-import balance
-
-from map_mod import win
+from setup.map_mod import win
 from toolbox import return_corners, load_asset, blank_func
-from textM import textbox_font
-from text_box import Textbox
 
-import inventory
+from entity_classes.fish import Fish, FishSpawner
 
-from fish import Fish, FishSpawner
+from entity_classes.NPCs import old_man
+from entity_classes import NPCs
 
-from NPCs import old_man
-import NPCs
-
-from player_mod import player, PlayerSprite
+from entity_classes.player_mod import player, PlayerSprite
 
 from sound_library import *
 
 pygame.display.set_caption('Gamble core')
 clock = pygame.time.Clock()
+
+from menu_functions import text_box
+
+from setup import config
 
 pygame.init() # I do not know if this is relevant
 
@@ -114,8 +109,8 @@ Global.spritelist.add(player)
 quests = [
 # start game with dialouge lines of the character wishing they could get a cool boat for fishing and leisure
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
-        load_asset('talk to.png', 'quest_imgs'),
-        pygame.font.SysFont('Comic Sans MS', 10),
+            load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10),
             F"Talk to the old man", NPCs.old_man_quest_func, blank_func, 'tutorial1'),
 
 QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 1,
@@ -124,8 +119,8 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 1,
             F"Catch {1} fish", blank_func, blank_func, 'fish_catching1'),
 
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
-        load_asset('talk to.png', 'quest_imgs'),
-        pygame.font.SysFont('Comic Sans MS', 10),
+            load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10),
             F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial2'),
 
 QuestSystem(player_tracker.fish_sold, "sell", 'total', 1,
@@ -134,8 +129,8 @@ QuestSystem(player_tracker.fish_sold, "sell", 'total', 1,
             F"sell {1} fish", blank_func, blank_func, 'fish_selling1'),
 
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
-        load_asset('talk to.png', 'quest_imgs'),
-        pygame.font.SysFont('Comic Sans MS', 10),
+            load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10),
             F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial3'),
 
 QuestSystem(player_tracker.fish_caught, "catch_fish", 'salmon', 3,
@@ -144,8 +139,8 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'salmon', 3,
             F"Catch {3} salmon", blank_func, blank_func, 'fish_catching1'),
 
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
-        load_asset('talk to.png', 'quest_imgs'),
-        pygame.font.SysFont('Comic Sans MS', 10),
+            load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10),
             F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial4'),
 
 QuestSystem(player_tracker.fish_caught, "catch_fish", 'bass', 1,
@@ -154,8 +149,8 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'bass', 1,
             F"Catch {1} bass", blank_func, blank_func, 'fish_catching1'),
 
 QuestSystem(player_tracker.npcs_talked_to, "talk_to", 'old_man', 1,
-        load_asset('talk to.png', 'quest_imgs'),
-        pygame.font.SysFont('Comic Sans MS', 10),
+            load_asset('talk to.png', 'quest_imgs'),
+            pygame.font.SysFont('Comic Sans MS', 10),
             F"Talk to the {old_man.name}", NPCs.old_man_quest_func, blank_func, 'tutorial5'),
 
 QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 999,
@@ -168,9 +163,7 @@ QuestSystem.quest_init(quests) # starts the tutorial quests
 
 """Rescales all UI_scale based elements"""
 def rescale_ui():
-    global text_box, textbox_font # yes it is lol wtf
-    text_box = pygame.transform.scale(text_box, (Global.text_box_dimensions()))
-    textbox_font = pygame.font.SysFont('Comic Sans MS', 20*Global.UI_scale)
+    text_box.textbox.image = pygame.transform.scale(text_box.textbox.image, text_box.textbox.dimensions)
     inventory.Inventory.rescale()
     balance.balance.rescale()
     # dialouge box is defined already rescaled
@@ -202,7 +195,7 @@ def draw_notifications():
 def draw_ui():
     balance.balance.draw()
     inventory.inventory.draw(pos)
-    Textbox.dialouge.draw()
+    text_box.textbox.draw()
     pos_p = (pos[0] + xp, pos[1] + yp)
     win.blit(textM.small_comic.render(str(pos_p), False, (0, 0, 0)), (700, 10))  # shows cursor cords
     QuestSystem.cur_quest().draw(Global.UI_scale)
@@ -394,7 +387,7 @@ while True:
         handle_events()
 
     elif game_state == 'minigame':
-        state = minigame.run((player.cords[0]-xp, player.cords[1]-yp), Fish.fish_took.cautiousness)
+        state = minigame.run((player.cords[0] - xp, player.cords[1] - yp), Fish.fish_took.cautiousness)
         if state == 'success':
             game_state = 'main'
             if player.hook_cords:
