@@ -131,13 +131,19 @@ class Fish(pygame.sprite.Sprite):
     @classmethod
     def update_fish(cls, player, timer, inventory, game_state, grid_ahead, yp, xp):
         """Handles fish AI on a high level"""
+
+        params = locals().copy() # so i do not have to write out all the variables again when passing
+        params.pop('cls')
+
         buffer = 25 # I added short buffers of 25 scaled pixels so that fish slightly outside of the players render distance still move in order to make it less jarring
         for species_list in cls.fish_lists.values():
             for fish in species_list:
-                if -scale(buffer)<(fish.cords[0]-xp)< reso_p.win_length+scale(buffer) and -scale(buffer)<(fish.cords[1] - yp)< reso_p.win_height+scale(buffer): #if fish within render distance of player
+                x = fish.cords[0]
+                y = fish.cords[1]
+                if -scale(buffer)<(x-xp)< reso_p.win_length+scale(buffer) and -scale(buffer)<(y - yp)< reso_p.win_height+scale(buffer): #if fish within render distance of player
                     #win length/height is already scaled
                     fish.check_hook_collision(player.hook_cords)
-                    fish.complex_fish_movement(player, timer, inventory, game_state, grid_ahead, yp, xp)
+                    fish.complex_fish_movement(**params)
 
     @classmethod
     def scared_check(cls, player_hook_cords):
@@ -146,30 +152,34 @@ class Fish(pygame.sprite.Sprite):
         if player_hook_cords:
             for species_list in cls.fish_lists.values():
                 for fish in species_list:
-                    difx, dify = abs(player_hook_cords[0] - fish.cords[0]), abs(player_hook_cords[1] - fish.cords[1])
+                    difx, dify = abs(player_hook_cords[0] - fish.cords[0]), abs(player_hook_cords[1] - fish.cords[1]) # 1d distances between fish and hook
                     expx, expy = abs(player_hook_cords[0] - fish.cords[0] + fish.vector[0]), abs(
-                        player_hook_cords[1] - fish.cords[1] + fish.vector[1])
+                        player_hook_cords[1] - fish.cords[1] + fish.vector[1]) # distance after moving a minimal amount
+
                     dif = math.sqrt(difx * difx + dify * dify)  # checks absolute distance between fish and your hook
                     e_dif = math.sqrt(expx * expx + expy * expy)  # checks if you are moving away or towards the hook
-                    if dif <= check_radius and dif < e_dif:  # if within a circle within radius 64 and the fish is moving towards you turn it around
+                    if dif <= check_radius and dif < e_dif:  # if within a circle with check_radius and the fish is moving towards you turn it around
                         fish.vector.reverse()
                         fish.ignore = 10  # makes the fish not be tricked by the bait for 100 ticks
 
     def expensive_fish_movement(self, player, bait, timer, inventory, game_state):
-        if not self.baited(player.hook_cords, bait) and timer % 60 == 0:
+        """Handles fish movement which does not need to be handled every tick"""
+        if timer % 60 == 0 and not self.baited(player.hook_cords, bait):
             # every second active fishes get a chance to swerve
             self.fish_swerve()
+
         elif self == Fish.fish_caught and not Fish.fish_took:
             # handles deciding when a circling fish grabs onto the hook
             baselikelihood = 40
-            x = random.randrange(100 * (-baselikelihood),
-                                 int(100 * self.bait_dict(bait)))  # *100 is for decimals to matter
+            x = random.randrange(100 * (-baselikelihood), (100 * self.bait_dict(bait)))  # *100 is for decimals to matter
             if x > 0:
                 Fish.fish_took = self
                 inventory.inventory.use_bait()  # the fish ate the bait
+
         elif self == Fish.fish_caught and Fish.fish_took:
             # handles deciding when a fish which grabbed onto the hook will run away
-            y = random.randrange(-300, 15)
+            baselikelihood = 0.1
+            y = random.randrange(int(100*(-self.bait_dict(bait))), int(100*baselikelihood))
             if y > 0 and game_state != 'minigame':
                 player.hook_cords = False
                 Fish.fish_took = False

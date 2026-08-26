@@ -224,10 +224,11 @@ def dynamic_drawing(): # TO DO: make this o(n) time by only checking neighborhoo
                 break
         if not s_list and not spritelist_copy: # if there is no more sprites to draw end the process
             return
-
+market = load_asset("market.png")
 def drawmap():
     """Draws player map"""
     win.blit(tile_map, (0-xp, 0-yp))
+    win.blit(market, (map_mod.scale*1830-xp, map_mod.scale*1122-yp))
     if player.hook_cords:
         win.blit(player.bauble, (player.hook_cords[0]-xp, player.hook_cords[1]-yp))
     for spritedecor in Decor.LowDecor.decor_sprites.sprites():
