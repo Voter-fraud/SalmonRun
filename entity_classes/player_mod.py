@@ -10,9 +10,12 @@ from setup.reso_p import win
 
 from setup.globals import Global
 
-from sound_library import rod_cast_sound
+from sound_library import sound_dict
 
 pygame.init()
+
+#globals
+rod_cast_sound = sound_dict["rod_cast_sound"]
 
 
 class PlayerSprite(pygame.sprite.Sprite):

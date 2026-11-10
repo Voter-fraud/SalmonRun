@@ -88,18 +88,23 @@ from entity_classes.player_mod import player, PlayerSprite
 
 from sound_library import *
 
-pygame.display.set_caption('Gamble core')
+pygame.display.set_caption('SalmonRun')
 clock = pygame.time.Clock()
 
 from menu_functions import text_box
 
 from setup import config
 
+config.init('custom')
+
 pygame.init() # I do not know if this is relevant
+
+walking_sound = sound_dict["walking_sound"]
+rod_pull_sound = sound_dict["rod_pull_sound"]
 
 def init_main():
     """Adds all high decorations into the game and then rescales everything"""
-    for decor in Decor.HighDecor.decor_sprites.sprites():
+    for decor in Decor.Decor.decor_sprites.sprites():
         Global.spritelist.add(decor)
     rescale_game()
 
@@ -162,8 +167,8 @@ QuestSystem(player_tracker.fish_caught, "catch_fish", 'total', 999,
 
 QuestSystem.quest_init(quests) # starts the tutorial quests
 
-"""Rescales all UI_scale based elements"""
 def rescale_ui():
+    """Rescales all UI_scale based elements"""
     text_box.textbox.image = pygame.transform.scale(text_box.textbox.image, text_box.textbox.dimensions)
     inventory.Inventory.rescale()
     balance.balance.rescale()
@@ -175,7 +180,7 @@ def rescale_game():
     for sprite in Global.spritelist.sprites():
         if not isinstance(sprite, PlayerSprite):
             sprite.rescale()
-    for sprite in Decor.LowDecor.decor_sprites.sprites():
+    for sprite in Decor.Decor.decor_sprites.sprites():
         sprite.rescale()
     player.rescale_player()
 
@@ -211,7 +216,7 @@ def dynamic_drawing(): # TO DO: make this o(n) time by only checking neighborhoo
     while True:
         for sprite in spritelist_copy:
             if sprite.rect.bottomleft[1] == s_list[0]: # looks through the initial list of sprites for a match
-                if isinstance(sprite, Decor.HighDecor) or isinstance(sprite, NPCs.Conversible): #draws the matched sprite
+                if isinstance(sprite, Decor.Decor) or isinstance(sprite, NPCs.Conversible): #draws the matched sprite
                     sprite.draw(xp, yp)
                 elif isinstance(sprite, Fish):
                     sprite.draw(player, game_state, timer, xp, yp)
@@ -231,7 +236,7 @@ def drawmap():
     win.blit(market, (map_mod.scale*1830-xp, map_mod.scale*1122-yp))
     if player.hook_cords:
         win.blit(player.bauble, (player.hook_cords[0]-xp, player.hook_cords[1]-yp))
-    for spritedecor in Decor.LowDecor.decor_sprites.sprites():
+    for spritedecor in Decor.Decor.decor_sprites.sprites():
         spritedecor.draw(xp, yp)
     dynamic_drawing()
     draw_ui()
@@ -378,7 +383,7 @@ while True:
     hooked_fsh = Fish.fish_caught
     # Fish.rescale()
     player.update()
-    for decorr in Decor.HighDecor.decor_sprites.sprites():
+    for decorr in Decor.Decor.decor_sprites.sprites():
         decorr.update()
     player.walking = False
     #keyholds

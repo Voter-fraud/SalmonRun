@@ -3,16 +3,16 @@ from setup import map_mod
 from setup.reso_p import win
 from toolbox import load_asset, from_saves
 
-class HighDecor(pygame.sprite.Sprite):
+class Decor(pygame.sprite.Sprite):
     decor_sprites = pygame.sprite.Group()
     @classmethod
-    def create_sprite(cls, image, cords, length, width, name):
-        ret = cls(image, cords, length, width, name)
+    def create_sprite(cls, image, cords, length, width, name, high_low):
+        ret = cls(image, cords, length, width, name, high_low)
         ret.rescale()
         cls.decor_sprites.add(ret)
         return ret
 
-    def __init__(self, image, cords, length, width, name):
+    def __init__(self, image, cords, length, width, name, high_low:str ):
         super().__init__()
         self.image = image
         self.original = int(cords[0]), int(cords[1])
@@ -20,35 +20,7 @@ class HighDecor(pygame.sprite.Sprite):
         self.length = int(length)
         self.width = int(width)
         self.rect = self.image.get_rect(topleft=self.cords)
-        self.decor = 'HighDecor'
-        self.name = name
-
-    def update(self):
-        self.rect = self.image.get_rect(topleft=self.cords)
-
-    def draw(self, xp, yp):
-        win.blit(self.image, (self.cords[0]-xp, self.cords[1]-yp))
-    def rescale(self):
-        self.image = pygame.transform.scale(self.image, (self.length * map_mod.scale, self.width * map_mod.scale))
-
-class LowDecor(pygame.sprite.Sprite):
-    decor_sprites = pygame.sprite.Group()
-    @classmethod
-    def create_sprite(cls, image, cords, length, width, name):
-        ret = cls(image, cords, length, width, name)
-        ret.rescale()
-        cls.decor_sprites.add(ret)
-        return ret
-
-    def __init__(self, image, cords, length, width, name):
-        super().__init__()
-        self.image = image
-        self.original = int(cords[0]), int(cords[1])
-        self.cords = int(cords[0]) * map_mod.scale, int(cords[1]) * map_mod.scale
-        self.length = int(length)
-        self.width = int(width)
-        self.rect = self.image.get_rect(topleft=self.cords)
-        self.decor = 'LowDecor'
+        self.decor = high_low+'Decor'
         self.name = name
 
     def update(self):
@@ -59,6 +31,7 @@ class LowDecor(pygame.sprite.Sprite):
 
     def rescale(self):
         self.image = pygame.transform.scale(self.image, (self.length * map_mod.scale, self.width * map_mod.scale))
+
 
 
 decor_imgs = {
@@ -84,17 +57,17 @@ def format_decor(doc):
         formatted_list.append(x)
     for decor in formatted_list:
         if decor[0] == 'LowDecor':
-            LowDecor.create_sprite(decor_imgs[decor[1]], (decor[2], decor[3]), decor[4], decor[5], decor[1])
+            Decor.create_sprite(decor_imgs[decor[1]], (decor[2], decor[3]), decor[4], decor[5], decor[1], "Low")
         if decor[0] == 'HighDecor':
-            HighDecor.create_sprite(decor_imgs[decor[1]], (decor[2], decor[3]), decor[4], decor[5], decor[1])
+            Decor.create_sprite(decor_imgs[decor[1]], (decor[2], decor[3]), decor[4], decor[5], decor[1], "High")
     return formatted_list
 
 def store_decor(doc):
     file = open(doc, 'w')
     file.truncate(0)
-    for decor in HighDecor.decor_sprites.sprites():
+    for decor in Decor.decor_sprites.sprites():
         file.write(F'HighDecor,{decor.name},{decor.original[0]},{decor.original[1]},{decor.length},{decor.width}\r')
-    for decor in LowDecor.decor_sprites.sprites():
+    for decor in Decor.decor_sprites.sprites():
         file.write(F'LowDecor,{decor.name},{decor.original[0]},{decor.original[1]},{decor.length},{decor.width}\r')
     file.close()
 

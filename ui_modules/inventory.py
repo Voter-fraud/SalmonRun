@@ -157,7 +157,7 @@ class Inventory:
     def release(self, pos, grab_pos, player, balance, tracker):
         """Lets go of a grabbed item and places it in the given slot or sells it on the market."""
         if self.grabbed:
-            for sprite in Decor.HighDecor.decor_sprites.sprites():
+            for sprite in Decor.Decor.decor_sprites.sprites():
                 if sprite.name == 'market':
                     if sprite.rect.collidepoint(grab_pos):
                         if isinstance(self.grabbed, Item) and self.grabbed.is_fish:

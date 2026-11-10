@@ -1,4 +1,45 @@
 #initialisation
+import logging
+import textM
+from system_modules.fishing_quests import QuestSystem
+from system_modules.stat_tracker import player_tracker
+
+import Decor
+from system_modules import minigame
+from setup import map_mod
+import sound_library
+from setup.globals import Global
+
+from system_modules.interactible_zone import market_zone
+
+from ui_modules import balance, inventory, menu_handler
+
+from setup.map_mod import win
+from toolbox import return_corners, load_asset, blank_func
+
+from entity_classes.fish import Fish
+from entity_classes.fish_spawner import FishSpawner
+
+from entity_classes.NPCs import old_man
+from entity_classes import NPCs
+
+from entity_classes.player_mod import player, PlayerSprite
+
+from sound_library import *
+
+pygame.display.set_caption('SalmonRun')
+clock = pygame.time.Clock()
+
+from menu_functions import text_box
+
+from setup import config
+
+config.init('custom')
+
+pygame.init() # I do not know if this is relevant
+
+walking_sound = sound_dict["walking_sound"]
+rod_pull_sound = sound_dict["rod_pull_sound"]
 import copy
 import Decor
 from setup.globals import Global
@@ -15,12 +56,12 @@ Decor.format_decor(from_saves('Decor positions.txt'))
 
 spritelist = pygame.sprite.Group()
 
-for sprite in Decor.HighDecor.decor_sprites.sprites():
+for sprite in Decor.Decor.decor_sprites.sprites():
     spritelist.add(sprite)
 
 def init_main():
     """Adds all high decorations into the game and then rescales everything"""
-    for decor in Decor.HighDecor.decor_sprites.sprites():
+    for decor in Decor.Decor.decor_sprites.sprites():
         Global.spritelist.add(decor)
     rescale_game()
 
@@ -87,7 +128,7 @@ class Camera:
         self.height = 32 * map_mod.scale
         self.walking = False
         self.left_hold = 'grass'
-        self.right_hold = Decor.LowDecor(Decor.decor_imgs['fern'], (0, 0), 32, 32, 'fern')
+        self.right_hold = Decor.Decor(Decor.decor_imgs['fern'], (0, 0), 32, 32, 'fern')
 
 
     @property
@@ -228,9 +269,11 @@ dialouge_dict = { # get a better system later for inspection lines.
 cam = Camera()
 
 def rescale_ui():
-    global text_box, textbox_font
-    text_box = pygame.transform.scale(text_box, (510*UI_scale, 70*UI_scale))
-    textbox_font = pygame.font.SysFont('Comic Sans MS', 20*UI_scale)
+    """Rescales all UI_scale based elements"""
+    text_box.textbox.image = pygame.transform.scale(text_box.textbox.image, text_box.textbox.dimensions)
+    inventory.Inventory.rescale()
+    balance.balance.rescale()
+    # dialouge box is defined already rescaled
 
 
 def rescale_game():
@@ -239,7 +282,7 @@ def rescale_game():
     for sprite in spritelist.sprites():
         if not isinstance(sprite, Camera):
             sprite.rescale()
-    for sprite in Decor.LowDecor.decor_sprites.sprites():
+    for sprite in Decor.Decor.decor_sprites.sprites():
         sprite.rescale()
 rescale_game()
 
@@ -265,7 +308,7 @@ def dynamic_drawing():
     while True:
         for sprite in spritelist_copy:
             if sprite.rect.bottomleft[1] == s_list[0]:
-                if isinstance(sprite, Decor.HighDecor):
+                if isinstance(sprite, Decor.Decor):
                     sprite.draw(xp, yp)
                 else:
                     sprite.draw()
@@ -282,7 +325,7 @@ def dynamic_drawing():
 def drawmap():
     """Draws map"""
     win.blit(tile_map, (0-xp, 0-yp))
-    for spritedecor in Decor.LowDecor.decor_sprites.sprites():
+    for spritedecor in Decor.Decor.decor_sprites.sprites():
         spritedecor.draw(xp, yp)
     dynamic_drawing()
     draw_ui()
@@ -362,9 +405,9 @@ while True:
                         sprite.update(Global.game_map)
                 map_mod.Block.init_surface(Global.game_map)
                 tile_map = map_mod.Block.update_surface()
-                for sprite in Decor.HighDecor.decor_sprites.sprites():
+                for sprite in Decor.Decor.decor_sprites.sprites():
                     sprite.update()
-                for sprite in Decor.LowDecor.decor_sprites.sprites():
+                for sprite in Decor.Decor.decor_sprites.sprites():
                     sprite.update()
                 rescale_game()
 
@@ -374,22 +417,22 @@ while True:
                 Decor.store_decor('Decor positions.txt')
             #decor sprites
             if event.key == pygame.K_1:
-                cam.right_hold = Decor.HighDecor(Decor.decor_imgs['duck'], (0, 0), 24, 24, 'duck')
+                cam.right_hold = Decor.Decor(Decor.decor_imgs['duck'], (0, 0), 24, 24, 'duck')
             if event.key == pygame.K_2:
-                cam.right_hold = Decor.HighDecor(Decor.decor_imgs['bush1'], (0, 0), 32, 32, 'bush1')
+                cam.right_hold = Decor.Decor(Decor.decor_imgs['bush1'], (0, 0), 32, 32, 'bush1')
             if event.key == pygame.K_3:
-                cam.right_hold = Decor.HighDecor(Decor.decor_imgs['bush2'], (0, 0), 32, 32, 'bush2')
+                cam.right_hold = Decor.Decor(Decor.decor_imgs['bush2'], (0, 0), 32, 32, 'bush2')
             if event.key == pygame.K_4:
-                cam.right_hold = Decor.LowDecor(Decor.decor_imgs['fern'], (0, 0), 32, 32, 'fern')
+                cam.right_hold = Decor.Decor(Decor.decor_imgs['fern'], (0, 0), 32, 32, 'fern')
             if event.key == pygame.K_r:
                 pos2 = grab_pos()
-                for sprite in Decor.HighDecor.decor_sprites.sprites():
+                for sprite in Decor.Decor.decor_sprites.sprites():
                     if sprite.rect.collidepoint(pos2[0], pos2[1]):
-                        Decor.HighDecor.decor_sprites.remove(sprite)
+                        Decor.Decor.decor_sprites.remove(sprite)
                         spritelist.remove(sprite)
-                for sprite in Decor.LowDecor.decor_sprites.sprites():
+                for sprite in Decor.Decor.decor_sprites.sprites():
                     if sprite.rect.collidepoint(pos2[0], pos2[1]):
-                        Decor.LowDecor.decor_sprites.remove(sprite)
+                        Decor.Decor.decor_sprites.remove(sprite)
         if event.type == pygame.MOUSEBUTTONDOWN:
             grab_pos() # prints cursor location useful for debugging
             if event.button == 1:
@@ -407,11 +450,11 @@ while True:
             if event.button == 2:
                 pos_t = grab_pos()
                 pos2 = math.floor(pos_t[0] / map_mod.scale), math.floor(pos_t[1] / map_mod.scale)
-                if isinstance(cam.right_hold, Decor.HighDecor):
-                    new = Decor.HighDecor.create_sprite(cam.right_hold.image, pos2, cam.right_hold.length, cam.right_hold.width, cam.right_hold.name)
+                if isinstance(cam.right_hold, Decor.Decor):
+                    new = Decor.Decor.create_sprite(cam.right_hold.image, pos2, cam.right_hold.length, cam.right_hold.width, cam.right_hold.name)
                     spritelist.add(new)
-                if isinstance(cam.right_hold, Decor.LowDecor):
-                    Decor.LowDecor.create_sprite(cam.right_hold.image, pos2, cam.right_hold.length, cam.right_hold.width, cam.right_hold.name)
+                if isinstance(cam.right_hold, Decor.Decor):
+                    Decor.Decor.create_sprite(cam.right_hold.image, pos2, cam.right_hold.length, cam.right_hold.width, cam.right_hold.name)
             if event.button == 3:
                 pos2 = grab_pos()
                 y = math.floor(pos2[1] / map_mod.tile_size)  # returns the nearest multiple of block_size
