@@ -6,13 +6,16 @@ from toolbox import load_asset, from_saves
 class Decor(pygame.sprite.Sprite):
     decor_sprites = pygame.sprite.Group()
     @classmethod
-    def create_sprite(cls, image, cords, length, width, name, high_low):
-        ret = cls(image, cords, length, width, name, high_low)
+    def create_sprite(cls, image=False, length=False, width=False, name=False, high_low="High", cords=(0, 0), preset=""):
+        if not preset:
+            ret = cls(image, length, width, name, high_low, cords)
+        else:
+            ret = cls(*decor_presets[preset], cords)
         ret.rescale()
         cls.decor_sprites.add(ret)
         return ret
 
-    def __init__(self, image, cords, length, width, name, high_low:str ):
+    def __init__(self, image, length, width, name, high_low:str, cords):
         super().__init__()
         self.image = image
         self.original = int(cords[0]), int(cords[1])
@@ -20,7 +23,7 @@ class Decor(pygame.sprite.Sprite):
         self.length = int(length)
         self.width = int(width)
         self.rect = self.image.get_rect(topleft=self.cords)
-        self.decor = high_low+'Decor'
+        self.decor = high_low+'Decor' #if the decoration has position based rendering
         self.name = name
 
     def update(self):
@@ -36,11 +39,17 @@ class Decor(pygame.sprite.Sprite):
 
 decor_imgs = {
     'fern': load_asset('fern.png', 'foliage'),
-    'bush1': load_asset('weird bush2.png', 'foliage'),
-    'bush2': load_asset('bad bush.png', 'foliage'),
+    'weird_bush': load_asset('weird_bush.png', 'foliage'),
+    'bad_bush': load_asset('bad_bush.png', 'foliage'),
     'market': load_asset('market.png'),
     'duck': load_asset('duck.png'),
     'corgi': '',
+}
+
+decor_presets = {
+    'fern': (decor_imgs['fern'], 32, 32, 'fern', "Low"),
+    'weird_bush': (decor_imgs['weird_bush'], 32, 32, 'weird_bush', "High"),
+    'bad_bush': (decor_imgs['bad_bush'], 32, 32, 'bad_bush', "High"),
 }
 
 
@@ -57,9 +66,9 @@ def format_decor(doc):
         formatted_list.append(x)
     for decor in formatted_list:
         if decor[0] == 'LowDecor':
-            Decor.create_sprite(decor_imgs[decor[1]], (decor[2], decor[3]), decor[4], decor[5], decor[1], "Low")
+            Decor.create_sprite(decor_imgs[decor[1]], decor[4], decor[5], decor[1], "Low", (decor[2], decor[3]))
         if decor[0] == 'HighDecor':
-            Decor.create_sprite(decor_imgs[decor[1]], (decor[2], decor[3]), decor[4], decor[5], decor[1], "High")
+            Decor.create_sprite(decor_imgs[decor[1]], decor[4], decor[5], decor[1], "High", (decor[2], decor[3]))
     return formatted_list
 
 def store_decor(doc):

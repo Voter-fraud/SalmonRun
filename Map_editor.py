@@ -227,7 +227,6 @@ def handle_events():
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if pos[1] > inv.active[0] and inv.active[1] or inv.grabbed:
-                    place_decor[]
                     inv.release(pos, grab_pos(), player, balance, player_tracker)
 
 def handle_key_holds():
