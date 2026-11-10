@@ -171,7 +171,7 @@ class Fish(pygame.sprite.Sprite):
         elif self == Fish.fish_caught and not Fish.fish_took:
             # handles deciding when a circling fish grabs onto the hook
             baselikelihood = 40
-            x = random.randrange(100 * (-baselikelihood), (100 * self.bait_dict(bait)))  # *100 is for decimals to matter
+            x = random.randrange(int(100 * (-baselikelihood)), int(100 * self.bait_dict(bait)))  # *100 is for decimals to matter
             if x > 0:
                 Fish.fish_took = self
                 inventory.inventory.use_bait()  # the fish ate the bait
