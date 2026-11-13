@@ -92,7 +92,7 @@ fish_frames = {  # add vector based rotations for fish movemont
     }
 
 class Fish(pygame.sprite.Sprite):
-
+    """Fish (:"""
     fish_lists = {} # the only comprehensive collection of active fish.
     for fish in fish_types.keys():
         fish_lists[fish] = pygame.sprite.Group()
@@ -137,6 +137,7 @@ class Fish(pygame.sprite.Sprite):
 
         buffer = 25 # I added short buffers of 25 scaled pixels so that fish slightly outside of the players render distance still move in order to make it less jarring
         for species_list in cls.fish_lists.values():
+            fish: Fish
             for fish in species_list:
                 x = fish.cords[0]
                 y = fish.cords[1]
@@ -151,6 +152,7 @@ class Fish(pygame.sprite.Sprite):
         check_radius = scale(60)
         if player_hook_cords:
             for species_list in cls.fish_lists.values():
+                fish: Fish
                 for fish in species_list:
                     difx, dify = abs(player_hook_cords[0] - fish.cords[0]), abs(player_hook_cords[1] - fish.cords[1]) # 1d distances between fish and hook
                     expx, expy = abs(player_hook_cords[0] - fish.cords[0] + fish.vector[0]), abs(
@@ -167,7 +169,6 @@ class Fish(pygame.sprite.Sprite):
         if timer % 60 == 0 and not self.baited(player.hook_cords, bait):
             # every second active fishes get a chance to swerve
             self.fish_swerve()
-
         elif self == Fish.fish_caught and not Fish.fish_took:
             # handles deciding when a circling fish grabs onto the hook
             baselikelihood = 40
@@ -175,7 +176,6 @@ class Fish(pygame.sprite.Sprite):
             if x > 0:
                 Fish.fish_took = self
                 inventory.inventory.use_bait()  # the fish ate the bait
-
         elif self == Fish.fish_caught and Fish.fish_took:
             # handles deciding when a fish which grabbed onto the hook will run away
             baselikelihood = 0.1
@@ -186,6 +186,7 @@ class Fish(pygame.sprite.Sprite):
                 Fish.fish_caught = False
 
     def complex_fish_movement(self, player, timer, inventory, game_state, grid_ahead, yp, xp):
+        """Handles all fish movement at the highest level"""
         bait = inventory.inventory.bait_slot # renaming
         if timer % 10 == 0:  # handles expensive operations such as swerving and baiting 6x a second.
             self.expensive_fish_movement(player, bait, timer, inventory, game_state)
@@ -214,9 +215,11 @@ class Fish(pygame.sprite.Sprite):
 
 
     def bait_dict(self, bait):
+        """Returns the bait effectiveness modifier from bait_dict of a given bait"""
         return self.bait_dict_atr.get(bait, self.bait_dict_atr['default'])
 
     def check_hook_collision(self, player_hook_cords):
+        """Checks to see if a fish colllided with a hook"""
         if player_hook_cords and not Fish.fish_caught:
             # check for hook collisions
             self.rect.topleft = self.cords  # updates the fishes hit-boxes. This only happens when a hook is out to save resources
@@ -224,21 +227,24 @@ class Fish(pygame.sprite.Sprite):
                 Fish.fish_caught = self  # returns a class instance if there is a collision
 
     def draw(self, player, game_state, timer, xp, yp):
+        """Draws the fish onto the screen"""
         if Fish.fish_caught == self and player.hook_cords:  # draws the fish circling the hook and handles frame logic
+            offset = 6
+            catching_x = player.hook_cords[0] - xp - offset * map_mod.scale
+            catching_y = player.hook_cords[1] - yp - offset * map_mod.scale
+            catching_cords = catching_x, catching_y
+
             if game_state == 'minigame':
-                win.blit(fish_frames[str(self.vector)],
-                         (player.hook_cords[0] - xp - 6 * map_mod.scale, player.hook_cords[1] - yp - 6 * map_mod.scale))
+                win.blit(fish_frames[str(self.vector)], catching_cords)
             else:
-                win.blit(fish_frames[str(self.circ_frame)],
-                         (player.hook_cords[0] - xp - 6 * map_mod.scale, player.hook_cords[1] - yp - 6 * map_mod.scale))
+                win.blit(fish_frames[str(self.circ_frame)], catching_cords)
                 if timer % 12 == 0:
                     self.circ_frame = (self.circ_frame % 4 + 1)
             if Fish.fish_took:
-                win.blit(fish_frames['spc'], (
-                    player.hook_cords[0] - xp - 6 * map_mod.scale, player.hook_cords[1] - yp - 6 * map_mod.scale))
+                win.blit(fish_frames['spc'], catching_cords)
         else:
             win.blit(fish_frames[str(self.vector)],
-                     (self.cords[0] - xp, self.cords[1] - yp))  # should be changed to a rotation based on vector
+                     (self.cords[0] - xp, self.cords[1] - yp)) 
 
 
     def fish_swerve(self): # replace with gravity

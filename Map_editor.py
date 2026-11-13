@@ -66,6 +66,7 @@ from system_modules.fishing_quests import QuestSystem
 from system_modules.stat_tracker import player_tracker
 
 import Decor
+import math
 from system_modules import minigame
 from setup import map_mod
 import sound_library
@@ -217,6 +218,8 @@ def handle_events():
                 player.sprint_toggle()
             if event.key == pygame.K_F11:
                 game_state = 'minigame'
+            if event.key == pygame.K_0:
+                Decor.store_decor("saves/Decor positions.txt")
         inv = inventory.inventory
         if event.type == pygame.MOUSEBUTTONDOWN:
             grab_pos()  # prints cursor location useful for debugging
@@ -226,7 +229,10 @@ def handle_events():
                     inv.click(pos)
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
+                pos_t = grab_pos()
+                pos2 = math.floor(pos_t[0] / map_mod.scale), math.floor(pos_t[1] / map_mod.scale)
                 if pos[1] > inv.active[0] and inv.active[1] or inv.grabbed:
+                    Decor.Decor.create_sprite(cords=pos2, preset=inv.grabbed.name)
                     inv.release(pos, grab_pos(), player, balance, player_tracker)
 
 def handle_key_holds():

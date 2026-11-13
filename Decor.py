@@ -10,7 +10,8 @@ class Decor(pygame.sprite.Sprite):
         if not preset:
             ret = cls(image, length, width, name, high_low, cords)
         else:
-            ret = cls(*decor_presets[preset], cords)
+            print(str(preset)+"PRESET")
+            ret = cls(*decor_presets[preset], cords=cords)
         ret.rescale()
         cls.decor_sprites.add(ret)
         return ret
